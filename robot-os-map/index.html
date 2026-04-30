@@ -1,0 +1,2067 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>人形机器人产业地图与机器人 OS 深度分析</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #17202a;
+      --muted: #667085;
+      --line: #d8dee8;
+      --blue: #2458a6;
+      --teal: #1d7c74;
+      --green: #4c7a2b;
+      --amber: #a45f13;
+      --red: #b33b32;
+      --violet: #6f4aa3;
+      --chip: #eef2f6;
+      --shadow: 0 12px 32px rgba(23, 32, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); }
+    .page { max-width: 1800px; margin: 0 auto; padding: 24px; }
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+    .title-band, .brief {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .eyebrow {
+      font-size: 13px;
+      color: var(--teal);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.08;
+      max-width: 980px;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.75;
+      margin: 14px 0 0;
+      max-width: 1040px;
+    }
+    .brief strong { display: block; margin-bottom: 10px; }
+    .brief p { color: var(--muted); line-height: 1.7; margin: 0; }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 92px;
+    }
+    .metric b { display: block; font-size: 24px; margin-bottom: 4px; }
+    .metric span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(420px, 0.95fr) minmax(500px, 1.2fr) minmax(360px, 0.85fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      min-width: 0;
+    }
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .panel-note {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+    .layer-stack {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+    .layer {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfe;
+      width: 100%;
+      text-align: left;
+      color: var(--ink);
+      font: inherit;
+      cursor: pointer;
+    }
+    .layer:hover, .layer.active {
+      outline: 2px solid rgba(36, 88, 166, 0.22);
+      border-color: rgba(36, 88, 166, 0.55);
+      background: #fff;
+    }
+    .layer.active {
+      border-bottom-color: #fff;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      margin-bottom: 0;
+    }
+    .layer[data-zone="app"] { border-left-color: var(--teal); }
+    .layer[data-zone="runtime"] { border-left-color: var(--blue); }
+    .layer[data-zone="ai"] { border-left-color: var(--violet); }
+    .layer[data-zone="control"] { border-left-color: var(--amber); }
+    .layer[data-zone="os"] { border-left-color: var(--red); }
+    .layer-index {
+      font-weight: 800;
+      color: var(--muted);
+      font-size: 14px;
+      padding-top: 2px;
+    }
+    .layer h3 { margin: 0 0 4px; font-size: 15px; }
+    .layer p { margin: 0; color: var(--muted); line-height: 1.45; font-size: 12px; }
+    .layer-detail {
+      margin: -8px 0 10px 0;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--amber);
+      border-top: 0;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .layer-detail[data-zone="app"] { border-left-color: var(--teal); }
+    .layer-detail[data-zone="runtime"] { border-left-color: var(--blue); }
+    .layer-detail[data-zone="ai"] { border-left-color: var(--violet); }
+    .layer-detail[data-zone="control"] { border-left-color: var(--amber); }
+    .layer-detail[data-zone="os"] { border-left-color: var(--red); }
+    .layer-detail h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .mainstream-judgment {
+      margin: 10px 0 0;
+      border: 1px solid #bde1d7;
+      background: #edf7f4;
+      color: #24564f;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .mainstream-judgment b {
+      display: block;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .rails {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .rail {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: var(--chip);
+      color: #344054;
+      font-size: 12px;
+      border: 1px solid var(--line);
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .tab.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .roadmap-card {
+      border: 1px solid #d7e5ea;
+      border-left: 4px solid var(--teal);
+      border-radius: 8px;
+      padding: 12px;
+      background: #f8fbfc;
+    }
+    .roadmap-card h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: #24564f;
+    }
+    .roadmap-card p {
+      margin: 0 0 8px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 12px;
+    }
+    .roadmap-card b {
+      display: block;
+      font-size: 12px;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+    .route-card, .company-card {
+      border: 1px solid var(--line);
+      border-left: 4px solid transparent;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfe;
+      cursor: pointer;
+      min-height: 132px;
+      transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+    .route-card:hover, .company-card:hover,
+    .route-card.active, .company-card.active {
+      outline: 2px solid rgba(36, 88, 166, 0.28);
+      border-color: rgba(36, 88, 166, 0.6);
+    }
+    .company-card.active {
+      border-left-color: var(--theme, var(--blue));
+      background: color-mix(in srgb, var(--theme, var(--blue)) 8%, #fff);
+      box-shadow: 0 10px 24px color-mix(in srgb, var(--theme, var(--blue)) 18%, transparent);
+    }
+    .company-card.active h3 {
+      color: color-mix(in srgb, var(--theme, var(--blue)) 80%, #17202a);
+    }
+    .route-card h3, .company-card h3 { margin: 0 0 8px; font-size: 15px; }
+    .route-card p, .company-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 12px;
+    }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .tag {
+      font-size: 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 7px;
+      background: var(--chip);
+      color: #475467;
+    }
+    .advantage-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 2px 0 8px;
+    }
+    .advantage-chip {
+      font-size: 11px;
+      border: 1px solid #e9a94b;
+      border-radius: 999px;
+      padding: 3px 7px;
+      background: #fff6e6;
+      color: #8a4d08;
+      font-weight: 700;
+    }
+    .detail {
+      position: sticky;
+      top: 16px;
+      border-top: 5px solid var(--theme, var(--teal));
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+    .detail.refreshed {
+      box-shadow: 0 14px 34px color-mix(in srgb, var(--theme, var(--teal)) 18%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--theme, var(--teal)) 6%, #fff) 0%, #fff 150px);
+    }
+    .detail h2 { font-size: 22px; margin: 0 0 6px; color: color-mix(in srgb, var(--theme, var(--teal)) 72%, #17202a); }
+    .detail .type { color: var(--theme, var(--teal)); font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+    .detail-block { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+    .detail-block h3 { margin: 0 0 8px; font-size: 14px; }
+    .detail-block p, .detail-block li { color: var(--muted); line-height: 1.65; font-size: 13px; }
+    .detail-block ul { margin: 0; padding-left: 18px; }
+    .stack-grid {
+      display: grid;
+      gap: 8px;
+    }
+    .stack-cell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfe;
+    }
+    .stack-cell b {
+      display: block;
+      color: var(--ink);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    .stack-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .evidence-list {
+      display: grid;
+      gap: 8px;
+    }
+    .evidence-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      background: #fbfcfe;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .evidence-item a {
+      display: inline-block;
+      font-weight: 700;
+      text-decoration: none;
+      margin-bottom: 3px;
+    }
+    .evidence-item span {
+      display: block;
+      color: var(--muted);
+    }
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .score {
+      background: var(--chip);
+      border-radius: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+    }
+    .score.advantage {
+      background: color-mix(in srgb, var(--theme, var(--amber)) 10%, #fff);
+      border-color: color-mix(in srgb, var(--theme, var(--amber)) 58%, #fff);
+      box-shadow: inset 4px 0 0 var(--theme, var(--amber));
+    }
+    .score.advantage b {
+      color: var(--theme, var(--amber));
+    }
+    .score b { display: block; font-size: 18px; }
+    .score span { font-size: 12px; color: var(--muted); }
+    .radar-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      margin: 12px 0 0;
+      padding: 10px;
+      overflow: hidden;
+    }
+    .radar-card h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+    .radar-chart {
+      display: block;
+      width: 100%;
+      max-width: 310px;
+      height: auto;
+      margin: 0 auto;
+    }
+    .radar-grid {
+      fill: none;
+      stroke: #d8dee8;
+      stroke-width: 1;
+    }
+    .radar-axis {
+      stroke: #d8dee8;
+      stroke-width: 1;
+    }
+    .radar-shape {
+      fill: color-mix(in srgb, var(--theme, var(--teal)) 26%, transparent);
+      stroke: var(--theme, var(--teal));
+      stroke-width: 2;
+    }
+    .radar-point {
+      fill: var(--theme, var(--teal));
+      stroke: #fff;
+      stroke-width: 1.5;
+    }
+    .radar-label {
+      fill: #344054;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .radar-value {
+      fill: var(--theme, var(--teal));
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .commercial-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 12px;
+    }
+    .timeline {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+      max-height: 460px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .release {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr) 86px;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      background: #fbfcfe;
+      font-size: 12px;
+    }
+    .release strong { font-size: 13px; }
+    .status {
+      text-align: center;
+      border-radius: 999px;
+      padding: 4px 7px;
+      font-size: 11px;
+      background: #edf7f4;
+      color: var(--teal);
+      border: 1px solid #bde1d7;
+    }
+    .status.eol { background: #f8eeee; color: var(--red); border-color: #ebc7c3; }
+    .status.dev { background: #f4eef9; color: var(--violet); border-color: #d9c7ed; }
+    .layer-route-list {
+      display: grid;
+      gap: 10px;
+    }
+    .layer-route-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfe;
+    }
+    .layer-route-card h3 { margin: 0 0 6px; font-size: 15px; }
+    .route-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .route-columns b { display: block; margin-bottom: 4px; font-size: 12px; color: var(--ink); }
+    .route-columns p { margin: 0; color: var(--muted); line-height: 1.55; font-size: 12px; }
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .planner-card {
+      border: 1px solid #d7e5ea;
+      border-radius: 8px;
+      padding: 9px;
+      background: #f8fbfc;
+      min-height: 78px;
+    }
+    .planner-card b {
+      display: block;
+      color: var(--teal);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .planner-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .planner-card.inventory {
+      background: #f4f8ff;
+      border-color: #cad9f2;
+      box-shadow: inset 4px 0 0 var(--blue);
+    }
+    .planner-card.inventory b {
+      color: var(--blue);
+    }
+    .route-table-wrap {
+      margin-top: 10px;
+      border: 1px solid #d8e1ec;
+      border-radius: 8px;
+      background: #f6f8fb;
+      overflow-x: auto;
+      padding: 8px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+    .route-detail-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      table-layout: fixed;
+      font-size: 12px;
+    }
+    .route-detail-table th, .route-detail-table td {
+      border: 0;
+      padding: 9px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    .route-detail-table th {
+      background: #eaf0f6;
+      color: #293547;
+      border-top: 1px solid #d8e1ec;
+      border-bottom: 1px solid #d8e1ec;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+    .route-detail-table th:first-child {
+      border-left: 1px solid #d8e1ec;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+    .route-detail-table th:last-child {
+      border-right: 1px solid #d8e1ec;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    .route-detail-table th:nth-child(1), .route-detail-table td:nth-child(1) { width: 18%; }
+    .route-detail-table th:nth-child(2), .route-detail-table td:nth-child(2) { width: 30%; }
+    .route-detail-table th:nth-child(3), .route-detail-table td:nth-child(3) { width: 28%; }
+    .route-detail-table th:nth-child(4), .route-detail-table td:nth-child(4) { width: 24%; }
+    .route-detail-table td {
+      color: var(--muted);
+      line-height: 1.55;
+      background: #fff;
+      border-top: 1px solid #e1e8f0;
+      border-bottom: 1px solid #e1e8f0;
+    }
+    .route-detail-table tbody tr:nth-child(even) td {
+      background: #fcfdff;
+    }
+    .route-detail-table tbody tr:hover td {
+      background: #f4f8ff;
+    }
+    .route-detail-table td:first-child {
+      color: #263442;
+      font-weight: 800;
+      border-left: 1px solid #e1e8f0;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+    .route-detail-table td:last-child {
+      border-right: 1px solid #e1e8f0;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    .mainstream-cell {
+      background: #fff7e8 !important;
+      color: #694007 !important;
+      font-weight: 700;
+      box-shadow: inset 3px 0 0 #d58b22;
+    }
+    .layer-detail .route-table-wrap {
+      overflow: visible;
+      max-width: 100%;
+    }
+    .layer-detail .route-detail-table,
+    .layer-detail .route-detail-table thead,
+    .layer-detail .route-detail-table tbody,
+    .layer-detail .route-detail-table tr,
+    .layer-detail .route-detail-table th,
+    .layer-detail .route-detail-table td {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+    .layer-detail .route-detail-table {
+      border-spacing: 0;
+      table-layout: auto;
+      font-size: 12px;
+    }
+    .layer-detail .route-detail-table thead {
+      display: none;
+    }
+    .layer-detail .route-detail-table tbody {
+      display: grid;
+      gap: 8px;
+    }
+    .layer-detail .route-detail-table tr {
+      border: 1px solid #e1e8f0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 9px;
+    }
+    .layer-detail .route-detail-table tr:nth-child(even) {
+      background: #fcfdff;
+    }
+    .layer-detail .route-detail-table tr:hover {
+      background: #f4f8ff;
+    }
+    .layer-detail .route-detail-table td {
+      border: 0;
+      border-radius: 0;
+      background: transparent !important;
+      padding: 7px 0 0;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .layer-detail .route-detail-table td:first-child {
+      padding-top: 0;
+      color: #263442;
+      border: 0;
+    }
+    .layer-detail .route-detail-table td:last-child {
+      border: 0;
+    }
+    .layer-detail .route-detail-table td::before {
+      display: block;
+      margin-bottom: 2px;
+      color: #6b7787;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .layer-detail .route-detail-table td:nth-child(1)::before { content: "子域"; }
+    .layer-detail .route-detail-table td:nth-child(2)::before { content: "主流方案"; }
+    .layer-detail .route-detail-table td:nth-child(3)::before { content: "标志性方案"; }
+    .layer-detail .route-detail-table td:nth-child(4)::before { content: "选型判断"; }
+    .layer-detail .route-detail-table .mainstream-cell {
+      margin-top: 8px;
+      padding: 8px 9px;
+      border-radius: 8px;
+      background: #fff7e8 !important;
+      box-shadow: inset 3px 0 0 #d58b22;
+    }
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    .matrix th, .matrix td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      vertical-align: top;
+      text-align: left;
+    }
+    .matrix th { background: #eef2f6; }
+    .source-strip {
+      margin-top: 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+    @media (max-width: 1280px) {
+      .layout { grid-template-columns: 1fr; }
+      .detail { position: static; }
+    }
+    @media (max-width: 860px) {
+      .page { padding: 14px; }
+      .masthead { grid-template-columns: 1fr; }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cards { grid-template-columns: 1fr; }
+      .roadmap-grid { grid-template-columns: 1fr; }
+      .release { grid-template-columns: 1fr; }
+      .route-columns { grid-template-columns: 1fr; }
+      .planner-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="masthead" aria-label="报告标题">
+      <div class="title-band">
+        <div class="eyebrow">产品规划 · 人形机器人产业地图 · 机器人 OS 深度分析</div>
+        <h1>人形机器人产业地图与机器人 OS 深度分析</h1>
+        <p class="lead">本页以人形机器人公司为主线，向下展开机器人 OS 产业栈。每家公司按应用、API/中间件、运行/AI/控制、驱动/OS/硬件四组映射，并以五轴图补充本体硬件、AI/VLA、OS/中间件公开度、交付/量产、商业成果判断，避免把样机演示、厂商命名或中间件包装成完整操作系统能力。</p>
+      </div>
+      <aside class="brief">
+        <strong>读图口径</strong>
+        <p>主流人形机器人公司多数控制本体、控制、AI、任务和运营层；真正的 OS 底座、内核、安全、驱动生态和合规服务通常未公开或不完整。产品路线应以公司生态为牵引，用“国产 OS 底座 + 机器人运行时 + Robot API + HCL/CTS + 合规服务层”承接。</p>
+      </aside>
+    </section>
+
+    <section class="metric-grid" aria-label="关键结论">
+      <div class="metric"><b>25</b><span>人形机器人公司样本逐家映射 OS 产业栈</span></div>
+      <div class="metric"><b>14</b><span>从应用任务到芯片硬件的机器人 OS 分层</span></div>
+      <div class="metric"><b>5 轴</b><span>本体、AI、OS 公开、交付和商业成果五芒星评分</span></div>
+      <div class="metric"><b>证据链</b><span>每家公司保留公开来源、商业成果和未公开边界</span></div>
+    </section>
+
+    <section class="layout">
+      <article class="panel" aria-label="机器人 OS 分层">
+        <h2>机器人 OS 产业栈</h2>
+        <p class="panel-note">按控制权拆层：每层展开后先看主流成熟度、产业控制点、关键卡点和现状盘点，再看具体主流方案。</p>
+        <div class="rails" id="rails"></div>
+        <div class="layer-stack" id="layerStack"></div>
+      </article>
+
+      <article class="panel" aria-label="路线与公司">
+        <h2>公司与 OS 产业栈</h2>
+        <p class="panel-note">公司地图是主视图；机器人 OS 产业栈细化内容已移动到左侧，点击左侧任一层后在该面板下方展开。点击公司卡片后右侧显示五芒星图、布局、证据和边界。</p>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-view="companies" type="button">公司产业地图</button>
+          <button class="tab" data-view="routes" type="button">软件栈路线</button>
+          <button class="tab" data-view="ros" type="button">ROS 版本</button>
+          <button class="tab" data-view="gov" type="button">政采缺口</button>
+        </div>
+        <div id="contentView"></div>
+      </article>
+
+      <aside class="panel detail" aria-label="详情">
+        <div class="type" id="detailType">公司样本</div>
+        <h2 id="detailTitle">Figure AI</h2>
+        <p class="panel-note" id="detailSummary">选择任意公司或路线查看判断。</p>
+        <div class="radar-card" id="radarCard"></div>
+        <div class="score-grid" id="scoreGrid"></div>
+        <div class="detail-block">
+          <h3>产业栈布局</h3>
+          <div class="stack-grid" id="detailStack"></div>
+        </div>
+        <div class="detail-block">
+          <h3>关键判断</h3>
+          <ul id="detailFindings"></ul>
+        </div>
+        <div class="detail-block">
+          <h3>OS 与政采含义</h3>
+          <p id="detailGov"></p>
+        </div>
+        <div class="detail-block">
+          <h3>证据边界</h3>
+          <p id="detailEvidence"></p>
+          <p class="commercial-note" id="detailCommercial"></p>
+        </div>
+        <div class="detail-block">
+          <h3>核验证据</h3>
+          <div class="evidence-list" id="detailSources"></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="source-strip">
+      资料锚点：公司官方页面、公告、财报/招股书、客户案例、正式合作新闻、ROS 2 Distributions、REP-2000、Open-RMF、MoveIt、Nav2、ros2_control、NVIDIA Isaac ROS / Isaac Sim / Jetson、Gazebo、MuJoCo、Fast DDS、Cyclone DDS、Zenoh、micro-ROS、Zephyr、FreeRTOS、Mender/RAUC/SWUpdate、OpenHarmony / 国产 Linux、LOVOT、ElliQ、Moxie 等公开资料，以及本地《操作系统政府采购需求标准（2023年版）》主表分析。公司证据以右侧“核验证据”为准，商业成果按 2026-04-30 可复核公开信息保守评分。
+    </section>
+  </main>
+
+  <script>
+    const rails = ["数据", "身份", "权限", "安全", "证据", "协议", "OTA", "HCL", "SBOM", "服务"];
+
+    const layers = [
+      ["L14", "用户应用与行业任务", "家庭服务、陪伴/情感交互、工业搬运、仓储、巡检、接待、教育、康养、汽车工厂作业", "app"],
+      ["L13", "运营与机队管理", "fleet、任务调度、远程监控、人工接管、场地规则、运营看板", "app"],
+      ["L12", "应用框架与技能编排", "行为树、状态机、技能包、任务规划、HITL、人机协同", "app"],
+      ["L11", "Robot API / SDK", "能力 API、动作接口、消息 schema、插件、版本兼容、开发者 SDK", "runtime"],
+      ["L10", "ROS 工程原语", "package、node、topic、service、action、parameter、launch、bag、tf", "runtime"],
+      ["L9", "通信中间件", "DDS、Zenoh、AimRT、Cyber RT、LCM、YARP、OpenRTM、MAVLink", "runtime"],
+      ["L8", "机器人系统功能栈", "Nav2、MoveIt 2、SLAM、感知、语音、机械臂、ros2_control", "runtime"],
+      ["L7", "运行基础设施", "lifecycle、logging、trace、仿真、数字孪生、CI、OTA、回滚、DFX", "runtime"],
+      ["L6", "AI 与模型运行", "VLA/VLM、世界模型、TensorRT、ONNX、OpenVINO、模型管理", "ai"],
+      ["L5", "实时控制与安全域", "RTOS、MCU、EtherCAT/CAN、急停、联锁、控制周期、故障降级", "control"],
+      ["L4", "硬件抽象与驱动", "HAL、BSP、传感器、执行器、灵巧手、关节、电源、相机、LiDAR", "control"],
+      ["L3", "OS 发行版与系统服务", "Linux、OpenHarmony、Windows、macOS、QNX、VxWorks、文件系统、账户、桌面", "os"],
+      ["L2", "内核 / 实时内核 / 虚拟化", "Linux kernel、PREEMPT_RT、LiteOS、Zephyr、FreeRTOS、NuttX、hypervisor", "os"],
+      ["L1", "芯片与机器人硬件", "x86、Arm、RISC-V、LoongArch、Jetson、GPU/NPU、MCU、关节、电机、传感器", "os"]
+    ];
+
+    const layerRoutes = [
+      {
+        id: "L14", title: "用户应用与行业任务",
+        routes: "工业搬运/仓储、柔性制造、家庭服务、陪伴/情感交互、零售/药店、展陈接待、教育科研、康复/医疗辅助。",
+        flags: "Agility Digit 仓储、Apptronik Apollo 工业、1X NEO 家庭、Engineered Arts Ameca 社交交互、LOVOT / ElliQ / Moxie 陪伴机器人参考、Galbot 零售抓取、PAL/Unitree 教育科研。",
+        judgment: "这一层决定公司商业闭环，但不构成 OS 能力。陪伴机器人需要单独作为场景包处理，重点在长期关系、记忆、人格一致性、内容安全和家庭/老人/儿童保护，而不是工业负载。"
+      },
+      {
+        id: "L13", title: "运营与机队管理",
+        routes: "Fleet 云平台、任务调度、远程监控、人工接管、工单、场地规则、运营看板、客户 SLA。",
+        flags: "Agility Arc、Boston Dynamics Orbit、Open-RMF、1X Expert Mode、UBTECH 工业运营服务。",
+        judgment: "是从样机到交付的关键层。国内机器人 OS 若缺这一层，难以证明可靠运行和服务能力。"
+      },
+      {
+        id: "L12", title: "应用框架与技能编排",
+        routes: "行为树、状态机、技能包、任务规划、HITL、Agent 工作流、场景脚本、权限门控。",
+        flags: "Nav2 Behavior Tree、MoveIt Task Constructor、LimX COSA、AgiBot LinkCraft、Figure Helix 任务行为。",
+        judgment: "应沉淀为 Robot Skill API，避免上层场景直接绑定某个厂商 SDK 或 ROS topic。"
+      },
+      {
+        id: "L11", title: "Robot API / SDK",
+        routes: "动作 API、能力 API、消息 schema、插件机制、仿真 API、版本兼容、开发者 SDK。",
+        flags: "Unitree SDK2、AgiBot Link-U / AimRT、LimX TRON SDK、PAL ROS 平台、Leju Kuavo 开源接口。",
+        judgment: "这是国产机器人 OS 平台最适合形成差异化的层。目标是屏蔽本体差异，而不是重造所有底层中间件。"
+      },
+      {
+        id: "L10", title: "ROS 工程原语",
+        routes: "package、node、topic、service、action、parameter、launch、bag、tf、Lifecycle、Composition。",
+        flags: "ROS 2 Humble / Jazzy、rosbag2、tf2、Lifecycle Node、ros1_bridge。",
+        judgment: "ROS 2 是机器人工程事实标准之一，但仍是中间件和工具链，不是完整 OS。"
+      },
+      {
+        id: "L9", title: "通信中间件",
+        routes: "DDS/RMW、Zenoh、AimRT、Cyber RT、LCM、YARP、OpenRTM、MAVLink、gRPC、MQTT。",
+        flags: "Fast DDS、Cyclone DDS、Zenoh RMW、AimRT、Apollo Cyber RT、PX4/ArduPilot MAVLink。",
+        judgment: "该层决定分布式通信和数据回放效率。产品应保持 RMW / 通信层可替换，避免被单一实现锁死。"
+      },
+      {
+        id: "L8", title: "机器人系统功能栈",
+        routes: "导航、操作、运动规划、SLAM、语音、感知、机械臂、控制接口、机器人安全服务。",
+        flags: "Nav2、MoveIt 2、ros2_control、Isaac ROS GEM、OpenVSLAM/SLAM Toolbox、Autoware。",
+        judgment: "这一层是机器人能力核心。国产 OS 适配要用功能栈测试，而不是只验证系统能启动。"
+      },
+      {
+        id: "L7", title: "运行基础设施",
+        routes: "日志、trace、仿真、数字孪生、CI/HIL、OTA、回滚、DFX、诊断、SBOM、灰度发布。",
+        flags: "rosbag2、ros2_tracing、Gazebo/Isaac Sim/MuJoCo、Open-RMF 仿真、厂商 fleet 运维平台。",
+        judgment: "是产品化短板高发层。没有日志、回放、仿真和回滚，机器人 OS 很难完成现场闭环。"
+      },
+      {
+        id: "L6", title: "AI 与模型运行",
+        routes: "VLA/VLM/LLM、世界模型、动作策略、模型管理、边缘推理、TensorRT、ONNX Runtime、OpenVINO、Triton。",
+        flags: "Figure Helix、1X Redwood、Sanctuary Carbon、NVIDIA GR00T / Isaac、Galbot 具身多模态、AgiBot Genie。",
+        judgment: "模型层决定智能上限，但闭源、数据合规和算力供应链风险高。不能把模型命名成 OS 能力。"
+      },
+      {
+        id: "L5", title: "实时控制与安全域",
+        routes: "全身控制、MPC/WBC、强化学习策略、RTOS/MCU、CAN/EtherCAT、急停、联锁、故障降级。",
+        flags: "Boston Dynamics 运控、Unitree 运动控制、ros2_control、micro-ROS、PREEMPT_RT、Zephyr/FreeRTOS/NuttX。",
+        judgment: "这一层保障人身安全和高频闭环。它可以增强 OS 实时性，但不能替代 OS 安全与合规。"
+      },
+      {
+        id: "L4", title: "硬件抽象与驱动",
+        routes: "HAL、BSP、关节电机、灵巧手、IMU、相机、LiDAR、麦克风阵列、触觉、电池/BMS、GPU/NPU 驱动。",
+        flags: "Unitree Dex3、Sanctuary 触觉手、RobotEra XHAND、Fourier GR-2、Jetson Linux 驱动、国产 GPU/NPU Runtime。",
+        judgment: "机器人 HCL 的核心层。政采 HCL 与机器人 HCL 是两套清单，必须分别验证。"
+      },
+      {
+        id: "L3", title: "OS 发行版与系统服务",
+        routes: "Ubuntu、Jetson Linux、Debian/Yocto、openEuler、UOS、麒麟、OpenCloudOS、OpenHarmony、Windows、QNX、VxWorks。",
+        flags: "Ubuntu + ROS 2 研发基线；openEuler/UOS/麒麟 + ROS 2 政采验证基线；OpenHarmony 终端/分布式候选。",
+        judgment: "政采 OS 主体主要在这一层。机器人运行时必须落在可审查、可维护、可服务的 OS 底座上。"
+      },
+      {
+        id: "L2", title: "内核 / 实时内核 / 虚拟化",
+        routes: "Linux kernel、PREEMPT_RT、LiteOS、Zephyr、FreeRTOS、NuttX、Jailhouse/Hypervisor、容器隔离。",
+        flags: "PREEMPT_RT Linux、QNX/VxWorks、Zephyr、FreeRTOS、NuttX、OpenHarmony LiteOS。",
+        judgment: "决定调度、隔离和驱动模型。人形机器人通常需要通用 OS + 实时控制域协同，而不是单内核包打天下。"
+      },
+      {
+        id: "L1", title: "芯片与机器人硬件",
+        routes: "x86、Arm、RISC-V、LoongArch、Jetson、国产 CPU/GPU/NPU、MCU、关节模组、传感器、本体结构。",
+        flags: "NVIDIA Jetson、Intel/AMD、国产 Arm / LoongArch / RISC-V、Unitree/AgiBot/UBTECH/ Fourier 本体平台。",
+        judgment: "这是供应链和性能底座。国产化路线必须同步规划主控、AI 加速、传感器、执行器和维保备件。"
+      }
+    ];
+
+    const layerRouteDetails = {
+      L14: [
+        ["工业/仓储任务", "搬运、拣选、上下料、物料转运、设备巡检", "Agility Digit、Apptronik Apollo、UBTECH Walker", "优先要求任务成功率、异常恢复、工站接口和安全区定义。"],
+        ["家庭服务", "家务、远程专家、隐私权限、家庭设备联动", "1X NEO、Figure 家庭任务、小米 IoT 生态", "难点不是单动作，而是隐私、远程接管、儿童/宠物/老人安全和长期维护。"],
+        ["陪伴/情感交互", "长期对话、情绪识别、记忆与人格、语音/表情/动作联动、儿童陪伴、老人陪护、娱乐社交", "Engineered Arts Ameca、1X NEO、LOVOT、ElliQ、Moxie、UBTECH 教育/陪伴产品线", "独立于家庭劳动场景评估；OS 重点在 L14/L13/L12/L6 的长期关系、内容安全、隐私权限、家长控制和老人安全边界。"],
+        ["教育/科研/开发者", "教学实验、算法验证、竞赛、二次开发、低成本硬件", "Unitree G1、PAL TALOS、Leju Kuavo、Booster T1", "适合作为 Robot API、HCL 和国产 OS 适配验证入口。"],
+        ["零售/展陈/接待", "导览、问询、商品抓取、展厅交互、服务接待", "Galbot、Engineered Arts Ameca、UBTECH 商服机器人", "商业闭环依赖场地运营系统和人工兜底，不应只看交互演示。"]
+      ],
+      L13: [
+        ["Fleet 管理", "机器人注册、状态、位置、任务队列、健康度、地图和场地资源", "Open-RMF、Agility Arc、Boston Dynamics Orbit、InOrbit、Formant", "交付平台必须有 fleet 能力，否则无法做多机部署和 SLA。"],
+        ["远程接管", "视频/音频/遥操作、权限、审计、延迟监控、接管记录", "1X Expert Mode、Formant teleop、厂商云端运维", "家庭和公共场景必须把隐私告知、权限审批和录像留存写清。"],
+        ["现场服务", "工单、备件、故障分类、版本追溯、客户验收、培训", "Agility 服务体系、UBTECH 国内服务网络", "服务能力要与 OS 原厂服务分开验收。"]
+      ],
+      L12: [
+        ["行为树", "任务分解、条件判断、恢复分支、人工放行", "BehaviorTree.CPP、Nav2 BT Navigator", "适合作为可解释任务编排主线，便于场景包验收。"],
+        ["状态机/流程", "确定性步骤、状态迁移、审批、HITL、回滚", "SMACH、FlexBE、ROS 2 lifecycle、工站 workflow", "工业场景比家庭场景更依赖显式流程和人工确认。"],
+        ["任务规划/技能库", "PDDL、技能包、动作基元、任务模板、场景脚本", "PlanSys2、MoveIt Task Constructor、AgiBot LinkCraft", "技能接口应独立于具体本体，避免应用绑定厂商 SDK。"],
+        ["Agent 编排", "LLM/VLA 生成计划，规则系统和安全门控执行", "LimX COSA、Figure Helix、1X Redwood", "可作为上层智能，但必须被权限、急停和规则系统约束。"]
+      ],
+      L11: [
+        ["能力 API", "move、navigate、manipulate、speak、observe、grasp、handover、dock", "Spot SDK、Unitree SDK2、LimX TRON SDK、PAL ROS API", "平台价值在统一动作语义、错误码、回执和版本兼容。"],
+        ["消息 schema", "动作、传感器、任务、状态、告警、地图、工站对象模型", "ROS interfaces、Protobuf/gRPC、OpenAPI、DDS IDL", "要先冻结 schema，再适配 ROS/AimRT/厂商 SDK。"],
+        ["仿真 API", "资产、机器人模型、传感器模型、任务脚本、数据回放", "Gazebo/Ignition、Isaac Sim、MuJoCo、URDF/SDF/USD", "仿真资产和真实机器人接口要保持一致。"],
+        ["插件机制", "驱动插件、能力插件、场景插件、策略插件、工具注册", "ros2_control hardware plugins、Nav2 plugins、MoveIt plugins", "插件边界决定生态扩展速度。"]
+      ],
+      L10: [
+        ["节点通信原语", "node、topic、service、action、parameter、QoS", "ROS 2 Humble/Jazzy、rclcpp、rclpy", "新平台优先 Jazzy，存量设备保留 Humble。"],
+        ["工程构建", "package、ament、colcon、launch、composition、workspace", "colcon、ament_cmake、launch_ros", "工程规范要进入 SDK 模板和 CI。"],
+        ["数据记录", "tf、rosbag2、message filters、time sync", "tf2、rosbag2、Foxglove MCAP", "现场问题复盘必须依赖 rosbag/trace/日志闭环。"],
+        ["安全原语", "SROS2、DDS Security、证书、节点权限", "SROS2、DDS Security plugins", "机器人安全原语不能替代国密和政采安全。"]
+      ],
+      L9: [
+        ["DDS/RMW", "分布式发现、QoS、可靠/尽力、实时通信、多实现切换", "Fast DDS、Cyclone DDS、RTI Connext、GurumDDS", "ROS 2 主线，需做弱网、广播风暴和多机规模测试。"],
+        ["Zenoh", "pub/sub/query、低带宽、多域桥接、云边协同", "Eclipse Zenoh、rmw_zenoh", "适合跨网段、云边和多机器人数据桥接预研。"],
+        ["高性能运行时", "进程间通信、零拷贝、RPC、组件化工具链", "AimRT、iceoryx、eCAL、Cyber RT", "可作为性能优化层，但不能替代 Robot API。"],
+        ["轻量协议", "MQTT、gRPC、WebRTC、MAVLink、CANopen over gateway", "MQTT broker、gRPC、PX4/ArduPilot MAVLink", "适合云端、遥操作和特定控制域接入。"]
+      ],
+      L8: [
+        ["导航", "定位、地图、路径规划、行为树、局部控制", "Nav2、SLAM Toolbox、RTAB-Map、Cartographer", "移动底盘和轮式双臂优先验证，双足需加运动约束。"],
+        ["操作/机械臂", "运动规划、碰撞检测、抓取、轨迹执行", "MoveIt 2、Tesseract、Drake、Pinocchio", "人形双臂需要把全身控制和操作规划协同。"],
+        ["感知", "目标检测、分割、点云、姿态估计、语义地图", "Isaac ROS、OpenCV、PCL、YOLO/Detectron、Segment Anything", "应做传感器 HCL 和模型 Runtime 双矩阵。"],
+        ["语音/交互", "ASR、TTS、唤醒、对话、多模态交互", "Whisper/Vosk、厂商语音 SDK、LLM/VLM 接入", "展陈和家庭场景需要单独定义隐私和离线策略。"],
+        ["控制接口", "控制器管理、硬件接口、轨迹控制、力控接口", "ros2_control、ros2_controllers", "与 L5 实时控制域分界要清楚。"]
+      ],
+      L7: [
+        ["仿真/数字孪生", "物理仿真、场景资产、传感器仿真、合成数据、HIL", "Gazebo、Isaac Sim/Lab、MuJoCo、Webots", "仿真是训练和测试资产，不应替代实机验收。"],
+        ["观测与回放", "日志、trace、bag、指标、告警、可视化、事故复盘", "rosbag2、ros2_tracing、Foxglove、PlotJuggler、Prometheus/Grafana", "没有回放和 trace，现场故障只能靠人猜。"],
+        ["OTA/回滚", "A/B 分区、原子升级、差分包、回滚、签名、灰度", "Mender、RAUC、SWUpdate、OSTree、Ubuntu Core", "政采和现场交付都需要版本追溯和失败回退。"],
+        ["CI/HIL/CTS", "构建、仿真测试、硬件在环、兼容性测试、回归", "GitHub/GitLab CI、Jenkins、pytest/launch_testing、HIL 台架", "HCL/CTS 要成为产品准入门禁。"]
+      ],
+      L6: [
+        ["机器人基础模型", "VLA/VLM、动作策略、世界模型、模仿学习、强化学习", "Figure Helix、1X Redwood、Sanctuary Carbon、OpenVLA、NVIDIA GR00T、LeRobot", "模型能力要与数据、仿真、遥操作和安全门控一起评估。"],
+        ["推理 Runtime", "GPU/NPU 推理、模型量化、边缘部署、批处理/流式", "TensorRT、ONNX Runtime、OpenVINO、Triton、PyTorch", "NVIDIA 生态成熟，但国产 GPU/NPU 需要单独适配矩阵。"],
+        ["数据闭环", "采集、标注、回放、训练、评测、灰度发布", "Isaac Lab、LeRobot 数据集、厂商遥操作平台", "没有数据闭环，VLA 只能停留在演示。"],
+        ["模型治理", "模型版本、灰度、权限、审计、安全策略、离线策略", "MLflow/自研模型管理、企业 MLOps", "家庭、政企和教育场景必须明确数据留存边界。"]
+      ],
+      L5: [
+        ["全身控制", "MPC、WBC、QP、平衡控制、步态、轨迹优化", "Boston Dynamics 控制体系、Drake、Pinocchio、Crocoddyl", "双足人形的核心壁垒，通常高度闭源。"],
+        ["关节控制", "位置/速度/力矩控制、阻抗控制、力控、安全限位", "ros2_control、厂商伺服驱动、ODrive、DYNAMIXEL", "应用层不能直接绕过安全限位调用力矩接口。"],
+        ["实时域", "RTOS、MCU、实时 Linux、CAN/EtherCAT 主站、故障降级", "PREEMPT_RT、Zephyr、FreeRTOS、NuttX、QNX/VxWorks", "通用 OS 与实时控制域要分层，不建议全塞进 Linux 用户态。"],
+        ["安全联锁", "急停、碰撞检测、功率限制、模式切换、故障树", "安全 PLC、硬件 E-stop、ISO 10218/ISO 13849 思路", "人形机器人必须按人身安全设计，不只是软件权限。"]
+      ],
+      L4: [
+        ["运动总线", "EtherCAT、CAN/CAN-FD、CANopen、RS485、SPI/UART", "SOEM/IgH EtherCAT、CANopenNode、厂商关节总线", "高性能关节倾向 EtherCAT/CAN-FD；低成本平台常用串口/CAN。"],
+        ["视觉驱动", "MIPI/USB/GigE、V4L2、GStreamer、相机 SDK、时间同步", "RealSense、Orbbec、ZED、OAK-D、GigE Vision", "相机驱动、时间戳和曝光控制决定感知稳定性。"],
+        ["LiDAR/深度传感", "2D/3D LiDAR、RGB-D、ToF、结构光、点云驱动", "Ouster、Hesai、RoboSense、Livox、Orbbec", "移动和工业场景要把视场、帧率、户外光照和安全等级写入 HCL。"],
+        ["触觉/力传感", "六维力、关节力矩、触觉阵列、灵巧手传感", "Sanctuary 触觉手、RobotEra XHAND、ATI/Robotiq 力传感", "灵巧操作离不开触觉，但数据接口通常不标准。"],
+        ["电源与热管理", "BMS、电池热管理、功率限制、充电/换电、低电策略", "UBTECH Walker S2 换电、1X/Agility 热插拔或续航设计", "现场可用性高度依赖电池和热管理。"]
+      ],
+      L3: [
+        ["研发 OS", "Ubuntu/Debian + ROS 2、Jetson Linux、容器化开发", "Ubuntu 22.04/24.04、JetPack、Docker/Podman", "研发效率最高，但政采/信创不应直接照搬。"],
+        ["国产 Linux", "openEuler、UOS、麒麟、OpenCloudOS + ROS 2 适配", "openEuler/UOS/麒麟", "中期更现实的国产主控路线，需要补 ROS 包和硬件驱动。"],
+        ["OpenHarmony", "分布式、HDF、端侧/交互屏/轻量设备、特定硬件域", "OpenHarmony、OpenHarmony HDF", "适合端侧和分布式候选，承担通用 OS 主体仍需补政采主表。"],
+        ["安全/工业 OS", "QNX、VxWorks、Yocto 定制 Linux、安全认证配置", "QNX、VxWorks、Yocto", "适合安全域或专用控制器，不等同桌面政采 OS。"]
+      ],
+      L2: [
+        ["通用内核", "Linux kernel、cgroups、namespaces、drivers、LSM、安全补丁", "Linux kernel、SELinux/AppArmor", "承接驱动和生态，但实时性需要补强。"],
+        ["实时 Linux", "PREEMPT_RT、CPU isolation、实时调度、低延迟内核", "PREEMPT_RT Linux", "适合中低频实时和软实时，不替代 MCU 硬实时。"],
+        ["RTOS", "确定性调度、低功耗 MCU、传感器/执行器控制", "Zephyr、FreeRTOS、NuttX、ThreadX", "适合 L5/L4 控制域，与主控 Linux 协同。"],
+        ["虚拟化/隔离", "Hypervisor、容器、沙箱、安全域隔离", "Jailhouse、KVM、Docker/Podman", "用于隔离 AI、任务和控制域，避免单点故障扩散。"]
+      ],
+      L1: [
+        ["主控计算", "x86 工控机、Arm SoC、Jetson、国产 CPU、边缘 AI 盒子", "Jetson AGX Orin/Thor、Intel/AMD 工控机、Qualcomm RB6、Rockchip RK3588、Ascend/Horizon", "新平台要按算力、功耗、温度、驱动和供货周期建矩阵。"],
+        ["AI 加速", "GPU、NPU、DLA、VPU、端侧推理加速", "NVIDIA CUDA/TensorRT、Intel OpenVINO、国产 NPU Runtime", "AI Runtime 适配成本往往高于 OS 移植成本。"],
+        ["存储", "NVMe SSD、eMMC/UFS、工业 SD、日志环形缓存、数据盘加密", "工业 NVMe、Jetson NVMe、eMMC/UFS 模块", "机器人要同时考虑系统盘、模型盘、bag/视频数据盘和异常断电保护。"],
+        ["关节/执行器", "一体化关节、谐波/行星减速、准直驱、丝杠/绳驱、制动器", "Harmonic Drive、Nabtesco、Maxon、T-Motor/CubeMars、ROBOTIS DYNAMIXEL、Unitree 关节", "人形 BOM 和安全很大程度由关节方案决定。"],
+        ["电机/驱动器", "BLDC/PMSM、伺服驱动、FOC、编码器、力矩传感、刹车", "ODrive、Elmo、Maxon EPOS、厂商自研伺服", "力控能力、热设计和驱动保护要进入 HCL。"],
+        ["传感器", "RGB-D、双目、鱼眼、LiDAR、IMU、麦克风、触觉、力传感", "Orbbec、ZED、OAK-D、Ouster、Hesai、RoboSense、Bosch/Xsens IMU", "传感器选型要绑定驱动、同步、标定和长期供货。"]
+      ]
+    };
+
+    const layerPlanningInsights = {
+      L14: {
+        maturity: "场景分裂。工业/仓储更接近交付，家庭和陪伴仍处早期。",
+        control: "场景包、任务验收、客户流程、数据回流闭环。",
+        bottleneck: "工业、家庭、陪伴、教育的成功指标不同，不能用同一演示口径评估。",
+        inventory: "主流公司已分为工业/仓储、家庭服务、陪伴交互、教育科研四组；陪伴机器人需要与家庭劳动机器人分开盘点。"
+      },
+      L13: {
+        maturity: "AMR/四足较成熟，人形正在补齐。",
+        control: "fleet、远程接管、工单、SLA、权限审计、场地模型。",
+        bottleneck: "样机演示常缺服务闭环，家庭和公共场景还涉及隐私和人工接管合规。",
+        inventory: "成熟方案多来自 AMR、四足和 fleet SaaS；人形公开证据主要集中在 Agility Arc、Orbit、1X Expert Mode 类运营/接管能力。"
+      },
+      L12: {
+        maturity: "行为树和状态机成熟，VLA/Agent 编排快速演进。",
+        control: "技能库、行为树、任务 DSL、HITL、规则门控。",
+        bottleneck: "大模型生成计划不能直接下发到执行器，缺少可解释、安全可控的中间层。",
+        inventory: "当前主流是行为树/状态机 + 技能库；VLA/Agent 多处在上层规划，真正落到执行仍依赖规则门控。"
+      },
+      L11: {
+        maturity: "行业高度碎片，是平台机会窗口。",
+        control: "能力 API、动作语义、错误码、消息 schema、版本兼容、仿真接口。",
+        bottleneck: "厂商 SDK、ROS topic、私有协议各自为政，应用难以跨本体迁移。",
+        inventory: "头部厂商多发布 SDK 或开发文档，但跨公司通用 Robot API 尚未形成事实标准。"
+      },
+      L10: {
+        maturity: "ROS 2 已是事实主线，Humble/Jazzy 仍是产品规划重点。",
+        control: "package、node、topic、service、action、parameter、launch、bag、tf、生命周期。",
+        bottleneck: "ROS 2 解决工程协作，不解决完整 OS、政采、安全治理和现场服务。",
+        inventory: "Humble/Jazzy 是当前可用主线；ROS 1 进入存量维护，Kilted/Rolling 更适合预研。"
+      },
+      L9: {
+        maturity: "DDS 主流成熟，Zenoh/AimRT 等进入多域和高性能补位。",
+        control: "RMW、QoS、发现机制、跨域桥接、零拷贝、弱网策略。",
+        bottleneck: "多机规模、跨网段、弱网、广播风暴、实时性和回放效率容易失控。",
+        inventory: "ROS 2 默认依赖 DDS/RMW；Zenoh、AimRT、Cyber RT、LCM 等按性能、多域、行业场景补位。"
+      },
+      L8: {
+        maturity: "导航、操作、感知能力包成熟，人形全身协同仍不足。",
+        control: "Nav2、MoveIt 2、ros2_control、SLAM、感知、语音、操作规划。",
+        bottleneck: "通用功能包不能覆盖双足全身控制、灵巧操作和复杂人机协同。",
+        inventory: "Nav2、MoveIt 2、ros2_control、SLAM、Isaac ROS 等生态较成熟，但人形全身操作栈仍主要由厂商自研补足。"
+      },
+      L7: {
+        maturity: "开源组件丰富，产品化组合普遍不足。",
+        control: "日志、trace、bag、仿真、HIL、OTA、回滚、DFX、SBOM、灰度。",
+        bottleneck: "能演示任务不等于能现场交付，常缺诊断、追溯和回滚。",
+        inventory: "日志、仿真、OTA、HIL、SBOM 工具都有成熟组件，但在机器人整机里通常是拼装状态，公开证据弱于演示视频。"
+      },
+      L6: {
+        maturity: "前沿高速演进，闭源和算力依赖明显。",
+        control: "VLA/VLM、世界模型、数据闭环、模型版本、推理 Runtime、安全门控。",
+        bottleneck: "模型能力依赖数据、算力、仿真和遥操作；闭源模型难以审计和国产替代。",
+        inventory: "Figure Helix、1X Redwood、GR00T、OpenVLA、LeRobot 等代表方向并存；闭源模型和数据闭环差异很大。"
+      },
+      L5: {
+        maturity: "高壁垒、强闭源，头部公司差异最大。",
+        control: "全身控制、MPC/WBC、力控、急停、联锁、故障降级、实时总线。",
+        bottleneck: "通用 Linux 用户态难以承接硬实时和人身安全，应用层直通力矩接口风险高。",
+        inventory: "Boston Dynamics、Unitree 等体现控制壁垒；多数公司不公开控制细节，标准化程度低。"
+      },
+      L4: {
+        maturity: "传感器驱动较成熟，关节、灵巧手、触觉、电源接口碎片化。",
+        control: "HAL、BSP、关节/执行器、视觉、LiDAR、触觉、电源、GPU/NPU 驱动。",
+        bottleneck: "厂商 SDK 多、时间同步难、长期供货和驱动维护不可控。",
+        inventory: "视觉、LiDAR、IMU 驱动生态相对成熟，灵巧手、触觉、关节、电源/BMS 接口更依赖厂商私有协议。"
+      },
+      L3: {
+        maturity: "Ubuntu/Jetson Linux 研发成熟，国产 Linux 需要补机器人生态。",
+        control: "OS 安装、账户、权限、文件系统、网络、安全补丁、服务、包管理。",
+        bottleneck: "ROS 包、传感器驱动、GPU/NPU Runtime 在国产 OS 上经常缺验证。",
+        inventory: "研发侧仍以 Ubuntu/Jetson Linux 最常见；国产 Linux、OpenHarmony 在机器人主控/端侧的公开成熟案例仍需分别盘点。"
+      },
+      L2: {
+        maturity: "Linux/PREEMPT_RT/RTOS 各有位置，单内核通吃不现实。",
+        control: "调度、隔离、驱动模型、实时补丁、容器/虚拟化、安全域。",
+        bottleneck: "硬实时控制、AI 推理和应用任务互相抢资源，会扩大故障传播面。",
+        inventory: "主控 Linux、PREEMPT_RT、RTOS/MCU、容器/虚拟化并存；人形通常是多域协同而非单一内核。"
+      },
+      L1: {
+        maturity: "NVIDIA 生态最成熟，国产替代处于分域推进。",
+        control: "主控、GPU/NPU、MCU、存储、关节、电机、传感器、本体、备件。",
+        bottleneck: "Jetson/CUDA 依赖明显，关节和传感器可靠性、成本、供货、维修影响整机成败。",
+        inventory: "NVIDIA Jetson、工控机和国产 CPU/NPU 并存；关节、电机、传感器与本体供应链对整机差异影响很大。"
+      }
+    };
+
+    const companies = [
+      {
+        title: "Figure AI", type: "通用人形 / VLA", region: "美国",
+        summary: "Figure 03 与 Helix 把本体、家庭任务和具身 AI 绑定，主战场在本体、VLA、家庭任务和数据闭环。",
+        tags: ["Figure 03", "Helix", "家庭任务", "VLA"],
+        scores: { "本体": "强", "AI/VLA": "强", "OS公开": "弱中", "交付": "中强", "商业成果": "中" },
+        findings: ["具身模型和本体一体化能力强。", "公开 OS / 中间件信息有限。", "适合作为 VLA 与家庭机器人数据闭环标杆。"],
+        gov: "不能作为政采 OS 主体，只能作为机器人运行时和模型能力参考。",
+        evidence: "官网公开 Figure 03、Helix、BotQ 产线和家庭任务叙事；外部客户规模交付、隐私和安全仍需验证。",
+        commercial: "商业成果按早期规模爬坡评价：BotQ 已公开 350 台以上 Figure 03，但外部付费客户和收入规模仍未充分披露。"
+      },
+      {
+        title: "Tesla Optimus", type: "车企垂直体系", region: "美国",
+        summary: "优势来自制造、供应链、自动驾驶 AI 和工厂场景，但外部 OS 生态开放度低。",
+        tags: ["制造", "自动驾驶 AI", "垂直体系"],
+        scores: { "本体": "强", "AI/VLA": "强", "OS公开": "弱", "交付": "中", "商业成果": "弱" },
+        findings: ["制造和执行器成本潜力强。", "更像 Tesla 内部垂直系统，不是开放机器人 OS。", "对外部产品规划主要参考制造和数据闭环。"],
+        gov: "与国产政采 OS 无直接关系，不应作为 OS 合规样本。",
+        evidence: "公开信息多来自 Tesla AI / 发布会 / 财报口径；外部客户交付和软件接口仍不透明。",
+        commercial: "商业成果按 Optimus 独立产品评价，不按 Tesla 整车收入外推；当前主要是内部验证和产线规划。"
+      },
+      {
+        title: "Boston Dynamics Atlas", type: "工业高性能人形", region: "美国",
+        summary: "Atlas 强在运动控制和工业机器人经验，正在从研究展示转向企业应用叙事。",
+        tags: ["Atlas", "工业", "运动控制"],
+        scores: { "本体": "强", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "弱中" },
+        findings: ["运动控制和本体工程能力全球领先。", "Atlas 软件栈不是开放通用 OS。", "Spot SDK 可参考 API 生态，但不能外推到 Atlas OS。"],
+        gov: "对 L5 控制、L7 可靠性和 L13 企业场景有参考，不承担政采 OS。",
+        evidence: "官方 Atlas 页面强调 enterprise humanoid、industrial work 和 material handling；Atlas 商业规模仍需观察。",
+        commercial: "公司整体有 Spot / Stretch / Orbit 商业基础，但 Atlas 新一代人形尚未形成公开多客户销售证据。"
+      },
+      {
+        title: "Agility Robotics", type: "仓储 / 制造部署", region: "美国",
+        summary: "Digit + Arc 是较完整的机器人产品化样本，覆盖 fleet、监控、集成、服务和现场部署。",
+        tags: ["Digit", "Arc", "fleet", "仓储"],
+        scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "强", "商业成果": "强" },
+        findings: ["Arc 提供云端 fleet 和工作流控制。", "服务、现场支持、实时监控信号强。", "场景集中于仓储和制造。"],
+        gov: "对可维护性、服务和运行证据链有启发，但不能替代 OS 国密和供应链合规。",
+        evidence: "官方页面公开 Digit、Arc、服务支持、客户引用和部署能力；泛化到更多场景仍需验证。",
+        commercial: "商业成果较强，已围绕 GXO、Toyota、Mercado Libre、Schaeffler 等客户或合作方形成真实场景验证和商业协议。"
+      },
+      {
+        title: "Apptronik Apollo", type: "工业通用人形", region: "美国",
+        summary: "Apollo 公开强调模块化、热插拔电池、仓储制造、安全区域和点选式软件套件。",
+        tags: ["Apollo", "仓储", "制造", "安全"],
+        scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "中强", "商业成果": "中强" },
+        findings: ["工业场景和软件操作面明确。", "有 NASA Valkyrie 经验背书。", "OS / 中间件细节不充分公开。"],
+        gov: "适合作为工业人形操作面参考，不是政采 OS 样本。",
+        evidence: "官方 Apollo 页面公开参数、应用场景和软件控制描述；规模部署需持续观察。",
+        commercial: "商业成果来自 Mercedes-Benz、Jabil 等重点客户试点 / 合作和制造场景拓展，仍需验证规模部署收入。"
+      },
+      {
+        title: "Sanctuary AI", type: "灵巧操作 / embodied AI", region: "加拿大",
+        summary: "Phoenix 强调 industrial-grade humanoid、dexterity、tactile feedback 和 fine manipulation。",
+        tags: ["Phoenix", "灵巧手", "触觉", "工业"],
+        scores: { "本体": "中", "AI/VLA": "强", "OS公开": "弱", "交付": "中", "商业成果": "中" },
+        findings: ["灵巧操作和触觉是核心方向。", "公开 OS 信息不足。", "对机器人 OS 的启发在手部触觉和示教数据闭环。"],
+        gov: "不承担政采 OS，适合作为灵巧操作能力参考。",
+        evidence: "官网公开 Phoenix、industrial-grade、dexterity 和 embodied AI 叙事；量产节奏需核验。",
+        commercial: "商业成果属于工业客户试点和早期付费部署阶段，尚未形成大规模标准化交付证据。"
+      },
+      {
+        title: "1X NEO", type: "家庭人形", region: "挪威 / 美国",
+        summary: "NEO 公开预订、Redwood AI、Expert Mode、软体安全、本地和远程控制、Jetson Thor 计算。",
+        tags: ["NEO", "Redwood AI", "家庭", "远程专家"],
+        scores: { "本体": "强", "AI/VLA": "强", "OS公开": "弱中", "交付": "中", "商业成果": "中" },
+        findings: ["家庭场景信息披露完整。", "远程 Expert Mode 体现数据闭环和人工接管。", "隐私、安全和早期自主能力是关键问题。"],
+        gov: "不作政采 OS，但对家庭机器人权限、隐私、遥操作和 OTA 设计有强参考。",
+        evidence: "官方 NEO 页面公开规格、Redwood AI、Expert Mode、预订和硬件信息；真实家庭交付仍需验证。",
+        commercial: "商业成果按预订销售和早期家庭服务准备评价，关键还要看 2026 年交付后的留存、安全和服务成本。"
+      },
+      {
+        title: "Engineered Arts Ameca", type: "社交交互人形", region: "英国",
+        summary: "Ameca 强在人脸表情、对话、展陈和社交交互，不是工业作业人形主线。",
+        tags: ["Ameca", "社交", "展陈"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱中", "交付": "中", "商业成果": "中" },
+        findings: ["交互展示能力强。", "Tritium 更应归为交互机器人运行平台，不是通用 OS。", "适合接待、教育、展厅场景。"],
+        gov: "对政采 OS 直接价值低，Tritium 不能直接按政采操作系统处理。",
+        evidence: "官方页面定位 embodied AI social humanoid robots；工业执行能力需另行验证。",
+        commercial: "商业成果集中在展陈、接待、租赁和销售型社交机器人市场，不能外推为劳动型人形规模交付。"
+      },
+      {
+        title: "NEURA Robotics", type: "认知机器人 / 工业生态", region: "德国",
+        summary: "覆盖协作机器人、认知机器人和人形路线，价值在工业安全、传感和认知机器人产品组合。",
+        tags: ["4NE-1", "认知机器人", "工业"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱中", "交付": "中", "商业成果": "中强" },
+        findings: ["适合作为欧洲工业机器人路线参考。", "产品线覆盖较宽。", "人形 OS / 中间件公开证据有限。"],
+        gov: "不作为政采 OS 样本，主要观察工业安全和人机协作经验。",
+        evidence: "需以官方产品页、合作公告和正式客户案例继续核验。",
+        commercial: "公司整体协作机器人和认知机器人商业基础较强，人形产品仍需与既有机器人订单分开评价。"
+      },
+      {
+        title: "PAL Robotics", type: "科研 / 服务机器人平台", region: "西班牙",
+        summary: "TALOS、REEM-C 等平台具有科研和 ROS 生态价值，适合观察开发者友好机器人平台。",
+        tags: ["TALOS", "REEM-C", "ROS", "科研"],
+        scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "中", "交付": "中", "商业成果": "中" },
+        findings: ["ROS 生态和科研平台属性强。", "通用人形商业热度弱于新一代公司。", "适合 Robot API 和开发平台参考。"],
+        gov: "不作为政采 OS 主体。",
+        evidence: "以官方产品页、ROS/SDK 文档和科研交付案例为准。",
+        commercial: "商业成果稳定但小众，主要来自高校、研究机构和服务机器人平台付费采购。"
+      },
+      {
+        title: "Unitree", type: "低成本开放生态", region: "中国",
+        summary: "G1/H1/R1 与灵巧手、LiDAR、组件和二次开发生态使其成为开发者和教育科研的重要平台。",
+        tags: ["G1", "H1", "二次开发", "低成本"],
+        scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "强", "商业成果": "强" },
+        findings: ["G1 公开价格、自由度、传感器、OTA 和二次开发。", "SDK2 / DDS / ROS 2 友好路线利于开发者生态。", "安全认证和工业服务仍需补。"],
+        gov: "适合做国产机器人 HCL 和开发者生态样本，不等于政采 OS。",
+        evidence: "Unitree G1 官方页公开参数、价格、传感器、Jetson Orin 选配、OTA 和购买路径。",
+        commercial: "商业成果强在可购买 SKU、全球开发者扩散、教育科研和轻量商业销售；工业服务闭环仍需补强。"
+      },
+      {
+        title: "UBTECH", type: "国内产业化 / 教育服务", region: "中国",
+        summary: "Walker 系列面向工业和商业，UBTECH 有较强国内客户、渠道和服务基础。",
+        tags: ["Walker", "工业", "教育", "服务"],
+        scores: { "本体": "强", "AI/VLA": "中", "OS公开": "弱中", "交付": "强", "商业成果": "强" },
+        findings: ["国内服务和场景资源强。", "ROSA、BrainNet、Co-Agent 应拆入机器人运行平台/任务/模型层。", "公开 OS 边界仍不清晰。"],
+        gov: "服务基础与政采服务维度相关，但机器人智能平台不能替代 OS 合规证据。",
+        evidence: "官方和公开报道支撑 Walker 系列与商业化布局，Walker S2 已公开量产交付；OS / 中间件需进一步核验。",
+        commercial: "商业成果来自上市公司收入基础、国内客户 / 服务网络和 Walker 系列量产交付信号，但需拆分整机订单与 OS 合规证据。"
+      },
+      {
+        title: "Fourier Intelligence", type: "康复到通用人形", region: "中国",
+        summary: "从康复机器人扩展到 GRx / GR-1 / GR-2，人形路线具备运动控制和执行器基础。",
+        tags: ["GR-2", "康复", "执行器"],
+        scores: { "本体": "强", "AI/VLA": "中", "OS公开": "弱中", "交付": "中强", "商业成果": "中强" },
+        findings: ["硬件和运动控制积累明确。", "通用人形场景仍需验证。", "OS 公开度有限。"],
+        gov: "可作为国产本体生态样本，不作为政采 OS。",
+        evidence: "Fourier 官方产品页公开 GRx / GR-2 产品线，康复机器人业务已有医疗和科研市场基础。",
+        commercial: "商业成果以康复机器人和科研平台为基础，通用人形商业化仍需单独验证。"
+      },
+      {
+        title: "AgiBot 智元", type: "国产全栈 / 开源生态", region: "中国",
+        summary: "A2、X、Genie、D1、C5 等产品线覆盖全尺寸人形、柔性制造、开源机器人和具身智能。",
+        tags: ["A2", "X1/X2", "开源", "具身智能"],
+        scores: { "本体": "强", "AI/VLA": "强", "OS公开": "中", "交付": "强", "商业成果": "强" },
+        findings: ["多产品线和全栈信号强。", "Link-U / AimRT / LinkCraft / GenieSim 需要拆层归类。", "需拆清机器人软件平台与政采 OS。"],
+        gov: "可作为国产机器人运行时和整机生态候选伙伴；政采 OS 需独立审查。",
+        evidence: "AgiBot 官网公开 A2、X、Genie、D1、C5、full-size humanoid、full-stack open-source robot 和第 5000 台量产机器人下线口径。",
+        commercial: "商业成果在国产具身创业公司中靠前，重点转向 SKU 差异、客户结构、交付质量和长期维护验证。"
+      },
+      {
+        title: "Xpeng Robotics", type: "车企生态人形", region: "中国",
+        summary: "小鹏具备车企制造、感知、自动驾驶和供应链基础，人形产品开放度仍需持续核验。",
+        tags: ["IRON", "车企", "制造"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "弱" },
+        findings: ["汽车体系可迁移到机器人制造和感知。", "公开机器人软件生态有限。", "更适合作为车企人形路线观察。"],
+        gov: "不作为 OS 合规主体。",
+        evidence: "公开信息主要来自发布和企业新闻；产品开放接口、交付节奏需核验。",
+        commercial: "商业成果主要来自车企资源和内部验证潜力，独立机器人客户、订单和收入证据不足。"
+      },
+      {
+        title: "Xiaomi Robotics", type: "手机 / IoT / 家庭生态", region: "中国",
+        summary: "小米的优势在手机 OS、IoT、端侧硬件和家庭生态入口，人形整机不是唯一价值点。",
+        tags: ["CyberOne", "IoT", "端侧", "家庭"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "中", "交付": "弱中", "商业成果": "弱" },
+        findings: ["入口、账号、家庭设备和端侧生态强。", "人形机器人交付信号弱于生态信号。", "适合参考家庭机器人入口控制。"],
+        gov: "OS / IoT 生态有间接价值，但不是政采 OS 证明。",
+        evidence: "参考项目记录 Xiaomi Robotics 与 Xiaomi-Robotics-0 等公开信号；人形交付需验证。",
+        commercial: "商业成果不能按小米集团 IoT 收入直接外推，人形机器人缺少明确 SKU、客户和交付收入证据。"
+      },
+      {
+        title: "Galbot 银河通用", type: "具身多模态大模型", region: "中国",
+        summary: "定位具身多模态大模型通用机器人，强调服务行业与家庭。",
+        tags: ["具身多模态", "通用机器人"],
+        scores: { "本体": "中", "AI/VLA": "强", "OS公开": "弱", "交付": "中强", "商业成果": "中强" },
+        findings: ["模型和场景叙事强。", "OS / 中间件公开不足。", "适合作为具身模型伙伴观察。"],
+        gov: "不作为 OS 合规主体。",
+        evidence: "官网 meta 信息明确 embodied AGI robots，公开资料显示零售、药店和行业服务部署信号；交付规模需验证。",
+        commercial: "商业成果强于纯模型公司，已有真实行业场景信号，但订单规模、运维成本和跨场景复制仍需核验。"
+      },
+      {
+        title: "RobotEra 星动纪元", type: "国产人形创业", region: "中国",
+        summary: "侧重人形本体、运动控制和具身智能，公开演示能力较强。",
+        tags: ["STAR1", "XBot", "运动控制"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "中" },
+        findings: ["技术演示强。", "OS 与量产证据需持续核验。", "适合作为国产人形观察对象。"],
+        gov: "不作为 OS 合规依据。",
+        evidence: "公开信息需以官网和正式发布为主，避免将演示外推为成熟交付。",
+        commercial: "商业成果主要来自产品展示、融资和早期项目验证，尚缺稳定多客户交付与收入规模证据。"
+      },
+      {
+        title: "LimX Dynamics 逐际动力", type: "具身 Agentic OS / 多形态", region: "中国",
+        summary: "公开 Oli、TRON 1/2、FluxVLA Engine、LimX COSA Agentic OS、VGM 和 DreamActor。",
+        tags: ["Oli", "TRON", "COSA", "FluxVLA"],
+        scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "中", "商业成果": "中" },
+        findings: ["把具身系统、训练和控制平台化。", "Agentic OS 是机器人运行系统，不应等同政采 OS。", "适合做机器人 OS 分层拆解样本。"],
+        gov: "需要与国产 OS 底座组合，不能直接声明满足政采 OS。",
+        evidence: "官网公开全尺寸通用人形、COSA、FluxVLA、TRON 开发平台、融资和预订信息；合规能力需核验。",
+        commercial: "商业成果以开发平台、预订和技术生态扩散为主，量产交付和客户闭环还需继续核验。"
+      },
+      {
+        title: "Kepler", type: "国产通用人形", region: "中国",
+        summary: "Forerunner 系列面向商业和工业场景，需持续核验量产、API 和现场交付。",
+        tags: ["Forerunner", "商业", "工业"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中强", "商业成果": "中强" },
+        findings: ["产品化叙事明确。", "OS 公开度有限。", "适合作为国产整机观察样本。"],
+        gov: "不作为 OS 合规主体。",
+        evidence: "以官方页面和正式产品信息为准，预订、样机、量产和客户验收之间需区分。",
+        commercial: "商业成果按早期小批量交付评价，仍需供应商规格书、客户验收和服务体系证据支撑。"
+      },
+      {
+        title: "Leju Robotics", type: "开源鸿蒙 / 教育生态", region: "中国",
+        summary: "Kuavo 与开源鸿蒙、教育科研和开源生态相关，对国产 OS 验证有特殊价值。",
+        tags: ["Kuavo", "OpenHarmony", "开源", "教育"],
+        scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "中", "交付": "中", "商业成果": "中" },
+        findings: ["适合作为国产 OS + 机器人开发平台验证对象。", "教育和开源生态价值高。", "产品力和工业场景需补。"],
+        gov: "与国产 OS 结合潜力高，但机器人演示不能替代 OpenHarmony 政采主表整改。",
+        evidence: "需继续核验开源仓库、OpenHarmony 适配版本、硬件清单和教育科研采购证据。",
+        commercial: "商业成果集中在教育科研、开源生态、竞赛和国产 OS 适配验证，不按工业规模收入评价。"
+      },
+      {
+        title: "Booster Robotics", type: "教育竞赛 / 轻量平台", region: "中国",
+        summary: "面向教育、竞赛、科研和轻量开发者平台，适合做 Robot API 和算法验证。",
+        tags: ["T1", "教育", "竞赛"],
+        scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "中", "交付": "中", "商业成果": "中" },
+        findings: ["低门槛平台价值高。", "工业泛化和安全认证不足。", "适合开发者生态。"],
+        gov: "不作为政采 OS 主体。",
+        evidence: "需要以官方产品页、购买入口、文档和开源材料为准。",
+        commercial: "商业成果更接近轻量开发平台销售，重点看学校、赛事、实验室和开发者复购。"
+      },
+      {
+        title: "EngineAI 众擎", type: "低成本运动人形", region: "中国",
+        summary: "低成本和运动能力公开声量高，适合观察硬件成本和开发者扩散。",
+        tags: ["低成本", "运动控制", "开发者"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "中" },
+        findings: ["本体成本和运动能力是主要看点。", "OS / 中间件与服务体系需核验。", "不宜把发布热度当成熟平台。"],
+        gov: "只作国产本体和供应链观察对象。",
+        evidence: "公开资料需持续交叉验证。",
+        commercial: "商业成果有低成本产品入口和市场声量支撑，但真实出货、售后和复杂场景部署仍需验证。"
+      },
+      {
+        title: "MagicLab", type: "国产具身创业跟踪", region: "中国",
+        summary: "代表具身智能和人形创业方向，当前适合跟踪产品、供应链和软件平台公开证据。",
+        tags: ["跟踪", "具身智能", "人形"],
+        scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱中", "交付": "中", "商业成果": "弱中" },
+        findings: ["样本有助于观察国产创业路线。", "公开证据深度不足。", "暂不作为 OS 平台核心依据。"],
+        gov: "不作为政采 OS 合规依据。",
+        evidence: "保留为跟踪样本，待官方文档、客户、订单和交付证据完善后再升级。",
+        commercial: "商业路径、融资和购买咨询入口存在，但客户、订单、收入和批量交付证据仍偏弱。"
+      },
+      {
+        title: "Noetix Robotics", type: "消费 / 教育轻量人形", region: "中国",
+        summary: "代表低成本、消费和教育方向人形平台，适合观察硬件普及和开发者生态扩散。",
+        tags: ["低成本", "消费", "教育"],
+        scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "弱中", "交付": "中强", "商业成果": "中强" },
+        findings: ["消费/教育方向明确。", "OS 能力通常不是主线。", "可作为轻量开发平台观察。"],
+        gov: "不作为政采 OS 主体。",
+        evidence: "需要以官方产品页、价格、SDK、订单和交付材料继续核验。",
+        commercial: "商业成果集中在低成本消费 / 教育硬件和订单扩散，核心验证点是可靠性、内容生态和售后。"
+      }
+    ];
+
+    const stackGroups = [
+      ["app", "L14-L12 应用/运营/技能"],
+      ["api", "L11-L8 API/中间件/系统服务"],
+      ["runtime", "L7-L5 运行/AI/实时控制"],
+      ["base", "L4-L1 驱动/OS/硬件"]
+    ];
+
+    const companyStacks = {
+      "Figure AI": {
+        app: "核心：L14 家庭/工业任务、L12 Helix 行为与任务；延伸：L13 试点运营。",
+        api: "未公开：L11-L8 SDK、ROS/DDS、系统服务边界不足。",
+        runtime: "核心：L6 Helix/VLA、L5 全身控制；延伸：L7 数据与制造闭环。",
+        base: "核心：L4-L1 本体、传感、执行器和制造；缺口：L3-L2 OS 底座未公开。"
+      },
+      "Tesla Optimus": {
+        app: "核心：L14 工厂任务；延伸：L13 Tesla 内部生产运营。",
+        api: "未公开：外部 Robot API、SDK、中间件和系统服务基本不可见。",
+        runtime: "核心：L7 数据闭环、L6 自动驾驶 AI 迁移、L5 控制；平台开放度低。",
+        base: "核心：L4-L1 自研本体、执行器、传感与制造；缺口：L3-L2 OS 交付口径未公开。"
+      },
+      "Boston Dynamics Atlas": {
+        app: "核心：L14 工业搬运、装配和移动操作；延伸：企业应用试点。",
+        api: "延伸：Spot SDK 可参考；Atlas 的 L11-L8 开放接口不足。",
+        runtime: "核心：L5 高动态全身控制；延伸：L6 感知和任务 AI。",
+        base: "核心：L4-L1 高性能本体、液电/电驱工程和传感；缺口：OS 底座不公开。"
+      },
+      "Agility Robotics": {
+        app: "核心：L14 仓储和制造搬运；核心：L13 Arc fleet、监控和服务运营。",
+        api: "延伸：L11-L9 Arc 集成、任务和机器人接口；底层中间件不完整公开。",
+        runtime: "核心：L7 现场运行、诊断和服务闭环；延伸：L5 步行控制。",
+        base: "核心：L4-L1 Digit 本体和现场支持；缺口：L3-L2 OS 合规能力未公开。"
+      },
+      "Apptronik Apollo": {
+        app: "核心：L14 仓储、制造、物流；延伸：L13 场景运营和安全区域。",
+        api: "延伸：点选式软件套件和任务配置；L10-L8 中间件细节不足。",
+        runtime: "核心：L5 控制和安全运行；延伸：L7 运维、热插拔电池和现场服务。",
+        base: "核心：L4-L1 Apollo 本体、模块化硬件；缺口：OS 底座和驱动清单未公开。"
+      },
+      "Sanctuary AI": {
+        app: "核心：L14 工业灵巧操作；延伸：L12 示教与任务技能。",
+        api: "未公开：通用 API、SDK、ROS/DDS 和系统服务证据不足。",
+        runtime: "核心：L6 embodied AI、L5 灵巧手控制和触觉反馈。",
+        base: "核心：L4-L1 Phoenix 本体、灵巧手和触觉硬件；缺口：L3-L2 OS 未公开。"
+      },
+      "1X NEO": {
+        app: "核心：L14 家庭任务；核心：L13 Expert Mode、远程接管和用户运营。",
+        api: "延伸：家庭权限、远程控制和设备接入；开放 SDK 与中间件不足。",
+        runtime: "核心：L6 Redwood AI；延伸：L7 数据闭环和人工接管。",
+        base: "核心：L4-L1 NEO 本体、软体安全和 Jetson Thor 计算；缺口：国产 OS 无直接关系。"
+      },
+      "Engineered Arts Ameca": {
+        app: "核心：L14 展陈、接待、教育和社交互动；L13 运营较弱。",
+        api: "延伸：Tritium 交互运行平台；通用机器人 API 和 ROS 生态较弱。",
+        runtime: "核心：L6 对话、表情和交互 AI；L5 工业控制不是主线。",
+        base: "核心：L4-L1 头面部表情与上身本体；缺口：全身工业本体和 OS 公开能力不足。"
+      },
+      "NEURA Robotics": {
+        app: "核心：L14 工业协作、认知机器人和人机协同；延伸：多产品线场景。",
+        api: "延伸：工业集成接口；人形开放 API、中间件和 SDK 证据不足。",
+        runtime: "核心：L6 认知机器人能力；延伸：L5 安全协作控制。",
+        base: "核心：L4-L1 协作机器人、传感和安全硬件；缺口：人形 OS 底座未公开。"
+      },
+      "PAL Robotics": {
+        app: "核心：L14 科研、服务和教育任务；延伸：开发者样例。",
+        api: "核心：L11-L9 ROS 友好接口、SDK 和科研开发环境。",
+        runtime: "延伸：L5 控制、导航、操作栈；AI 泛化不是核心。",
+        base: "核心：L4-L1 TALOS、REEM-C 等平台；缺口：政采 OS 和产业化服务较弱。"
+      },
+      "Unitree": {
+        app: "核心：L14 教育、科研、开发者和轻量场景；延伸：行业二次开发。",
+        api: "核心：L11 SDK、ROS 2/DDS 友好生态；延伸：开发工具和组件。",
+        runtime: "核心：L5 运动控制；延伸：L6 感知/算法接入与 OTA。",
+        base: "核心：L4-L1 G1/H1/R1 本体、传感器、执行器和量产供应；缺口：L3-L2 国产 OS 合规需补。"
+      },
+      "UBTECH": {
+        app: "核心：L14 工业、教育、商业服务；延伸：L13 国内客户和服务运营。",
+        api: "延伸：ROSA、BrainNet、Co-Agent 应拆入任务、模型和运行平台；开放标准不足。",
+        runtime: "核心：L5 控制和任务执行；延伸：L6 模型协同。",
+        base: "核心：L4-L1 Walker 本体、制造和服务；缺口：OS 边界与政采证据需拆清。"
+      },
+      "Fourier Intelligence": {
+        app: "核心：L14 康复扩展到通用人形和展示场景；通用任务仍需验证。",
+        api: "未公开：开发者 API、中间件和系统服务边界不足。",
+        runtime: "核心：L5 运动控制；延伸：L6 人形感知与任务智能。",
+        base: "核心：L4-L1 GRx/GR 系列本体、康复执行器和供应链；缺口：L3-L2 OS 不公开。"
+      },
+      "AgiBot 智元": {
+        app: "核心：L14 柔性制造、通用服务和开源机器人；延伸：L13 生态运营。",
+        api: "核心：L11-L9 Link-U、AimRT、LinkCraft 等开发与通信平台。",
+        runtime: "核心：L6 Genie/具身模型、L5 控制；延伸：L7 数据、仿真和训练闭环。",
+        base: "核心：L4-L1 多产品线本体和硬件；缺口：L3-L2 需与国产 OS 底座组合。"
+      },
+      "Xpeng Robotics": {
+        app: "核心：L14 车企场景和潜在家庭/制造任务；商业任务边界仍需核验。",
+        api: "未公开：机器人 SDK、API 和中间件开放度不足。",
+        runtime: "延伸：L6 自动驾驶感知/AI 迁移、L5 控制；数据闭环来自车企体系。",
+        base: "核心：L4-L1 车企制造、供应链和人形本体探索；缺口：OS 口径未公开。"
+      },
+      "Xiaomi Robotics": {
+        app: "核心：L14 家庭生态入口和 IoT 设备联动；人形交付较弱。",
+        api: "延伸：手机/IoT 账号、设备接入和家庭控制；机器人 API 需核验。",
+        runtime: "延伸：端侧 AI、感知和家庭交互；L5 人形控制不是当前强证据。",
+        base: "核心：L3-L2 手机/IoT OS 生态和硬件供应链；L4-L1 人形本体证据有限。"
+      },
+      "Galbot 银河通用": {
+        app: "核心：L14 服务行业和家庭通用任务；延伸：具身 AGI 场景。",
+        api: "未公开：开放 API、中间件和开发者生态证据不足。",
+        runtime: "核心：L6 具身多模态大模型；延伸：L5 操作控制。",
+        base: "延伸：L4-L1 本体与抓取硬件；缺口：L3-L2 OS 和驱动生态未公开。"
+      },
+      "RobotEra 星动纪元": {
+        app: "核心：L14 展示、科研和潜在工业服务；场景交付需核验。",
+        api: "未公开：SDK、中间件和系统服务证据不足。",
+        runtime: "核心：L5 运动控制；延伸：L6 具身智能演示。",
+        base: "核心：L4-L1 STAR1/XBot 等本体；缺口：OS 底座和规模交付未公开。"
+      },
+      "LimX Dynamics 逐际动力": {
+        app: "核心：L14 通用人形和多形态任务；延伸：开发者和预订运营。",
+        api: "核心：L11-L8 COSA Agentic OS、机器人应用框架和接口；政采 OS 需拆分。",
+        runtime: "核心：L6 FluxVLA、VGM、DreamActor；核心：L5 多形态控制。",
+        base: "核心：L4-L1 Oli/TRON 等本体和运动硬件；缺口：L3-L2 国产 OS 合规需外接。"
+      },
+      "Kepler": {
+        app: "核心：L14 商业、工业和服务任务；规模交付需核验。",
+        api: "未公开：Robot API、SDK 和中间件开放证据不足。",
+        runtime: "延伸：L5 运动控制、L6 任务智能；公开深度有限。",
+        base: "核心：L4-L1 Forerunner 本体和硬件；缺口：OS、驱动清单和现场服务需补。"
+      },
+      "Leju Robotics": {
+        app: "核心：L14 教育、科研和开源社区；延伸：竞赛和开发样例。",
+        api: "核心：L11 开源接口、ROS/开发文档；延伸：OpenHarmony 机器人适配。",
+        runtime: "延伸：L5 控制和基础算法；AI 泛化不是核心。",
+        base: "核心：L4-L1 Kuavo 本体；延伸：L3-L2 OpenHarmony 结合潜力，仍需政采主表逐项达标。"
+      },
+      "Booster Robotics": {
+        app: "核心：L14 教育、竞赛、科研和算法验证；工业任务较弱。",
+        api: "核心：L11 开发接口和教学生态；L10-L8 系统服务较轻。",
+        runtime: "核心：L5 轻量运动控制；延伸：L6 算法验证。",
+        base: "核心：L4-L1 轻量本体；缺口：工业级驱动、OS、安全和服务体系不足。"
+      },
+      "EngineAI 众擎": {
+        app: "核心：L14 展示、开发者和低成本人形场景；工业交付需核验。",
+        api: "未公开：SDK、中间件和系统服务证据不足。",
+        runtime: "核心：L5 运动控制；延伸：L6 AI 能力待证。",
+        base: "核心：L4-L1 低成本本体和执行器路线；缺口：OS、驱动生态和服务体系需补。"
+      },
+      "MagicLab": {
+        app: "延伸：L14 具身智能和人形场景跟踪；公开任务边界不足。",
+        api: "未公开：开发者接口和中间件证据不足。",
+        runtime: "延伸：L6 具身模型、L5 控制；证据深度不足。",
+        base: "延伸：L4-L1 本体和供应链观察；缺口：L3-L2 OS、驱动和交付均需核验。"
+      },
+      "Noetix Robotics": {
+        app: "核心：L14 消费、教育和轻量开发场景；延伸：基础任务样例。",
+        api: "延伸：L11 开发接口需核验；L10-L8 公开不足。",
+        runtime: "延伸：L5 基础控制；L6 AI 能力较弱。",
+        base: "核心：L4-L1 低成本本体；缺口：L3-L2 OS 和工业级驱动生态未公开。"
+      }
+    };
+
+    const evidenceSources = {
+      "Figure AI": [
+        { label: "Figure Helix 02", href: "https://www.figure.ai/news/helix-02", note: "支撑 Helix / VLA 与本体控制布局；未公开通用 OS 或 SDK 边界。" },
+        { label: "Figure 官网", href: "https://www.figure.ai/", note: "支撑 Figure 人形本体、公司产品路线和任务叙事。" }
+      ],
+      "Tesla Optimus": [
+        { label: "Tesla AI & Robotics", href: "https://www.tesla.com/AI", note: "支撑 Optimus 与 Tesla AI / 制造体系关联；外部 SDK 与 OS 未公开。" }
+      ],
+      "Boston Dynamics Atlas": [
+        { label: "Boston Dynamics Atlas", href: "https://bostondynamics.com/products/atlas/", note: "支撑 Atlas 工业人形、本体和运动控制方向。" },
+        { label: "Boston Dynamics Orbit", href: "https://bostondynamics.com/products/orbit/", note: "支撑企业运维 / fleet / 运营层参考，不能直接外推到 Atlas OS。" }
+      ],
+      "Agility Robotics": [
+        { label: "Agility Digit", href: "https://agilityrobotics.com/products/digit", note: "支撑 Digit 本体与仓储/制造场景。" },
+        { label: "Agility Arc", href: "https://www.agilityrobotics.com/solution/arc", note: "支撑 fleet、任务和现场运营层布局。" }
+      ],
+      "Apptronik Apollo": [
+        { label: "Apptronik Apollo", href: "https://apptronik.com/apollo", note: "支撑 Apollo 工业场景、模块化、安全和软件操作面。" }
+      ],
+      "Sanctuary AI": [
+        { label: "Sanctuary Technology", href: "https://www.sanctuary.ai/technology", note: "支撑 Carbon AI、触觉、灵巧操作和工业级人形方向。" }
+      ],
+      "1X NEO": [
+        { label: "1X NEO", href: "https://www.1x.tech/neo", note: "支撑 NEO 家庭、Redwood AI、Expert Mode、硬件和隐私边界。" }
+      ],
+      "Engineered Arts Ameca": [
+        { label: "Engineered Arts", href: "https://engineeredarts.com/", note: "支撑 Ameca / 社交交互机器人方向；Tritium 属交互运行平台，不按政采 OS 处理。" }
+      ],
+      "NEURA Robotics": [
+        { label: "NEURA Robotics", href: "https://neura-robotics.com/", note: "支撑认知机器人、工业协作和 4NE-1 路线；人形 OS/SDK 仍需进一步核验。" }
+      ],
+      "PAL Robotics": [
+        { label: "PAL Robotics TALOS", href: "https://pal-robotics.com/robots/talos/", note: "支撑科研人形和 ROS 生态价值；商业人形 OS 能力有限。" }
+      ],
+      "Unitree": [
+        { label: "Unitree G1", href: "https://www.unitree.com/en/g1", note: "支撑 G1 参数、价格、传感器、开发者生态和量产可得性。" },
+        { label: "Unitree Developer", href: "https://support.unitree.com/home/en/developer", note: "支撑 SDK / 二次开发方向，具体授权需按 SKU 和合同核验。" }
+      ],
+      "UBTECH": [
+        { label: "UBTECH Walker S2", href: "https://www.ubtrobot.com/cn/humanoid/products/walker-s2", note: "支撑 Walker S2 工业人形和自主换电叙事；OS/中间件边界需合同核验。" },
+        { label: "UBTECH 官网", href: "https://www.ubtrobot.com/en", note: "支撑公司机器人产品线与服务布局。" }
+      ],
+      "Fourier Intelligence": [
+        { label: "Fourier GR-2 文档", href: "https://support.fftai.com/en/docs/GR-X-Humanoid-Robot/GR2/GR-2_Introduction/", note: "支撑 GR-2 本体、开发文档和科研平台属性。" }
+      ],
+      "AgiBot 智元": [
+        { label: "AgiBot A2 Ultra", href: "https://www.agibot.com/products/A2_Ultra", note: "支撑 A2 Ultra 产品线和全尺寸人形路线。" },
+        { label: "AgiBot Link-U OS", href: "https://www.agibot.com/filepage/282.html", note: "支撑 Link-U / 运行平台公开命名；仍需拆分为机器人运行时而非政采 OS。" }
+      ],
+      "Xpeng Robotics": [
+        { label: "XPENG Physical AI / IRON", href: "https://www.xpeng.com/news/019a56f54fe99a2a0a8d8a0282e402b7", note: "支撑 IRON、Physical AI、车企制造和 AI 迁移路线；SDK/OS 未公开。" }
+      ],
+      "Xiaomi Robotics": [
+        { label: "Xiaomi Robotics", href: "https://robotics.xiaomi.com/", note: "支撑小米机器人研发入口；人形机器人持续产品化和交付证据较弱。" }
+      ],
+      "Galbot 银河通用": [
+        { label: "Galbot 官网", href: "https://www.galbot.com/", note: "支撑具身多模态和通用机器人定位；OS、SDK、交付规模需继续核验。" }
+      ],
+      "RobotEra 星动纪元": [
+        { label: "RobotEra 官网", href: "https://www.robotera.com/en/", note: "支撑 STAR / XBot / 具身智能方向；OS/API 和量产交付证据不足。" }
+      ],
+      "LimX Dynamics 逐际动力": [
+        { label: "LimX TRON 1", href: "https://www.limxdynamics.com/en/products/tron1", note: "支撑 TRON 1 科研平台、SDK、仿真和开发者路线。" },
+        { label: "LimX 官网", href: "https://www.limxdynamics.com/en", note: "支撑 Oli、COSA、FluxVLA 等产品与运行平台公开口径。" }
+      ],
+      "Kepler": [
+        { label: "Kepler Forerunner K2", href: "https://www.gotokepler.com/productDetailK2?id=2", note: "支撑 Forerunner K2 官方入口；页面依赖 JS，OS/API 和交付细节仍需供应商资料核验。" }
+      ],
+      "Leju Robotics": [
+        { label: "Leju 官网", href: "https://www.lejurobot.com/en", note: "支撑 Kuavo、开源人形平台和教育科研场景。" }
+      ],
+      "Booster Robotics": [
+        { label: "Booster Robotics", href: "https://www.booster.tech/", note: "支撑教育、竞赛、开发者平台定位；工业 OS 能力不是主线。" }
+      ],
+      "EngineAI 众擎": [
+        { label: "EngineAI 众擎", href: "https://www.engineai.com.cn/", note: "支撑低成本运动人形和产品入口；OS/中间件与交付服务需核验。" }
+      ],
+      "MagicLab": [
+        { label: "MagicLab 魔法原子", href: "https://www.magiclab.top/", note: "支撑国产具身创业样本；公开证据深度不足，暂作观察对象。" }
+      ],
+      "Noetix Robotics": [
+        { label: "Noetix Robotics / 松延动力", href: "https://www.noetixrobotics.com/", note: "支撑消费/教育轻量人形入口；工业级 OS 和中间件证据不足。" }
+      ],
+      "ROS 2": [
+        { label: "ROS 2 Distributions", href: "https://docs.ros.org/en/rolling/Releases.html", note: "支撑 ROS 2 发行版、生命周期和版本判断。" },
+        { label: "ROS 2 on DDS", href: "https://design.ros2.org/articles/ros_on_dds.html", note: "支撑 DDS/RMW 中间件定位。" }
+      ],
+      "Ubuntu + ROS 2": [
+        { label: "ROS REP-2000", href: "https://www.ros.org/reps/rep-2000.html", note: "支撑 ROS 2 目标平台和 Ubuntu 基线判断。" }
+      ],
+      "Isaac ROS / Jetson": [
+        { label: "NVIDIA Isaac ROS", href: "https://developer.nvidia.com/isaac/ros", note: "支撑 Isaac ROS AI 加速和 Jetson 路线。" }
+      ],
+      "Open-RMF": [
+        { label: "Open-RMF / ROS 2 多机器人", href: "https://osrf.github.io/ros2multirobotbook/", note: "支撑多机器人 fleet 和场地运营层定位。" }
+      ],
+      "MoveIt / Nav2 / ros2_control": [
+        { label: "MoveIt", href: "https://moveit.ai/", note: "支撑运动规划能力包。" },
+        { label: "Nav2", href: "https://docs.nav2.org/", note: "支撑导航和行为树能力包。" }
+      ],
+      "OpenHarmony / 国产 Linux + ROS 2": [
+        { label: "OpenHarmony", href: "https://www.openharmony.cn/", note: "支撑 OpenHarmony 候选底座方向；政采主表达标需逐项补证。" },
+        { label: "openEuler", href: "https://www.openeuler.org/en/", note: "支撑国产 Linux + ROS 2 主控验证方向。" }
+      ]
+    };
+
+    const routes = [
+      { title: "ROS 2", type: "机器人中间件", summary: "节点、Topic、Service、Action、参数、launch、bag、DDS/RMW、QoS 和生命周期是主能力。", tags: ["L10", "L9", "DDS"], scores: {"生态":"强","OS":"缺","合规":"弱","国产化":"中"}, findings:["机器人运行时主线。","不提供完整 OS。","Jazzy/Humble 是产品规划重点。"], gov:"不能承担政采 OS 主体，需要国产 OS 底座承接合规。", evidence:"ROS 2 官方文档和发行版页面支撑版本与平台信息。" },
+      { title: "Ubuntu + ROS 2", type: "研发基线", summary: "研发、仿真、传感器、GPU、容器和社区包最成熟，但非国产 OS。", tags: ["研发", "Ubuntu", "ROS"], scores: {"生态":"强","OS":"中","合规":"弱","国产化":"弱"}, findings:["研发效率最高。","不适合作为政采交付口径。","可作为算法验证基线。"], gov:"需要另设国产 OS 交付基线。", evidence:"机器人行业事实基线，需按具体版本核验支持周期。" },
+      { title: "Isaac ROS / Jetson", type: "AI 加速栈", summary: "GPU、TensorRT、感知、SLAM、仿真和 Jetson 部署强。", tags: ["NVIDIA", "AI", "Jetson"], scores: {"AI":"强","OS":"中","合规":"弱","国产化":"弱"}, findings:["高性能选配价值大。","闭源驱动和供应链依赖明显。","不作为国产主线。"], gov:"不能承担国产 OS 主体，需要国产替代预案。", evidence:"NVIDIA Isaac ROS 官方页面支撑。" },
+      { title: "Open-RMF", type: "多机器人运营", summary: "fleet、场地资源、交通协调和任务集成，适合 L13/L12。", tags: ["fleet", "RMF", "ROS 2"], scores: {"运营":"强","OS":"缺","合规":"缺","生态":"中"}, findings:["运营层组件。","依赖 ROS 2。","不负责 OS、驱动和安全合规。"], gov:"只能作为多机器人运营组件接入。", evidence:"OSRF 多机器人与 RMF 材料支撑。" },
+      { title: "MoveIt / Nav2 / ros2_control", type: "机器人功能栈", summary: "操作、导航、控制接口三类核心能力包，不是 OS。", tags: ["运动规划", "导航", "控制"], scores: {"功能":"强","OS":"缺","合规":"缺","生态":"强"}, findings:["机器人能力核心。","依赖底座和中间件。","需做国产 OS 适配测试。"], gov:"不纳入 OS 合规主体，只作为机器人能力包。", evidence:"MoveIt、Nav2 和 ros2_control 官方文档。" },
+      { title: "OpenHarmony / 国产 Linux + ROS 2", type: "国产 OS 候选", summary: "国产 OS 底座承接合规，ROS 2 承接机器人运行时。", tags: ["openEuler", "UOS", "麒麟", "OpenHarmony"], scores: {"OS":"强-中","生态":"中","合规":"中","国产化":"强"}, findings:["中期更现实路线是国产 Linux + ROS 2。","OpenHarmony 适合终端/分布式/特定硬件域。","两者都要补机器人 HCL。"], gov:"这是达标主线，但需逐项对齐 173 条政采要求。", evidence:"本地政采主表分析与 openEuler/OpenHarmony 公开文档。" }
+    ];
+
+    const productRoadmaps = [
+      {
+        title: "工业 / 仓储交付线",
+        stack: "国产 Linux 或 Ubuntu 研发基线 + ROS 2 Jazzy/Humble + Nav2/MoveIt/ros2_control + fleet/OTA/HIL + 工业任务包。",
+        metric: "任务成功率、异常恢复率、平均无故障运行时间、SLA、版本回退成功率。"
+      },
+      {
+        title: "家庭服务与陪伴线",
+        stack: "端侧 OS + 隐私权限 + 语音/视觉/长期记忆 + Agent 技能 + 远程专家 + 家长/老人保护。",
+        metric: "隐私授权、内容安全、长期关系稳定性、人工接管合规、误执行控制。"
+      },
+      {
+        title: "开发者平台线",
+        stack: "Unitree / Leju / Fourier / LimX 等本体 + SDK + ROS 2 + Gazebo/Isaac/MuJoCo + Robot API + HCL/CTS。",
+        metric: "API 稳定性、文档完整度、仿真实机一致性、样例覆盖、社区扩展。"
+      },
+      {
+        title: "政采国产线",
+        stack: "国产 Linux + ROS 2/AimRT 适配 + Robot API + 机器人 HCL + 政采主表整改 + 国密/证书/SBOM/服务体系。",
+        metric: "政采条款满足率、国产硬件兼容数、ROS 包通过率、漏洞修复周期、原厂服务证据。"
+      },
+      {
+        title: "前沿 VLA 预研线",
+        stack: "Ubuntu/Jetson/Isaac/LeRobot/OpenVLA/GR00T 类工具 + 数据闭环 + 仿真训练 + 安全沙箱。",
+        metric: "数据闭环效率、泛化任务通过率、推理延迟、模型可替换性、安全门控覆盖。"
+      }
+    ];
+
+    const releases = [
+      ["ROS 1 Box Turtle", "2010-02", "EOL", "eol"],
+      ["ROS 1 C Turtle", "2010-08", "EOL", "eol"],
+      ["ROS 1 Diamondback", "2011-02", "EOL", "eol"],
+      ["ROS 1 Electric", "2011-08", "EOL", "eol"],
+      ["ROS 1 Fuerte", "2012-03", "EOL", "eol"],
+      ["ROS 1 Groovy", "2012-10", "EOL", "eol"],
+      ["ROS 1 Hydro", "2013-08", "EOL", "eol"],
+      ["ROS 1 Indigo", "2014-05", "EOL", "eol"],
+      ["ROS 1 Jade", "2015-05", "2017-05", "eol"],
+      ["ROS 1 Kinetic", "2016-05", "2021-05", "eol"],
+      ["ROS 1 Lunar", "2017-05", "2019-05", "eol"],
+      ["ROS 1 Melodic", "2018-05", "2023-05", "eol"],
+      ["ROS 1 Noetic", "2020-05", "2025-05", "eol"],
+      ["ROS 2 Ardent", "2017-12-08", "2018-12", "eol"],
+      ["ROS 2 Bouncy", "2018-07-02", "2019-07", "eol"],
+      ["ROS 2 Crystal", "2018-12-14", "2019-12", "eol"],
+      ["ROS 2 Dashing", "2019-05-31", "2021-05", "eol"],
+      ["ROS 2 Eloquent", "2019-11-22", "2020-11", "eol"],
+      ["ROS 2 Foxy", "2020-06-05", "2023-06-20", "eol"],
+      ["ROS 2 Galactic", "2021-05-23", "2022-12-09", "eol"],
+      ["ROS 2 Humble", "2022-05-23", "2027-05", "active"],
+      ["ROS 2 Iron", "2023-05-23", "2024-12-04", "eol"],
+      ["ROS 2 Jazzy", "2024-05-23", "2029-05", "active"],
+      ["ROS 2 Kilted", "2025-05-23", "2026-12", "active"],
+      ["ROS 2 Rolling", "2020-06 起", "滚动开发", "dev"],
+      ["ROS 2 Lyrical", "计划 2026-05", "TBD", "dev"]
+    ];
+
+    const govRows = [
+      ["功能", "L3/L2/L7", "ROS 和人形公司不提供完整安装、引导、中文、桌面、系统管理、常用软件。"],
+      ["兼容性", "L1/L3/L4/L11", "机器人 HCL 不能替代 CPU、整机、外设、办公、安全软件和运行库兼容。"],
+      ["安全", "L3/L2/L7/L5", "DDS Security、急停和机器人安全不等于国密、TLCP、根 CA、安全可靠测评。"],
+      ["可靠性", "L3/L7/L5", "任务连续运行、OTA 回滚和 OS 备份修复需要分开验证。"],
+      ["可维护性", "L3/L7/L13", "fleet 运维不能替代 OS 日志、升级、回退、备份和版本追溯。"],
+      ["服务", "L13/服务体系", "机器人现场服务和 OS 原厂服务要分别证明。"],
+      ["供应保障", "L3/L6/L7", "SBOM、开源许可证、源代码审查、代码无风险和数据安全通常缺证据。"]
+    ];
+
+    const themeColors = ["#2458a6", "#1d7c74", "#6f4aa3", "#a45f13", "#4c7a2b", "#b33b32"];
+
+    const state = { view: "companies", selected: companies[0], selectedLayer: "L1" };
+
+    const radarAxes = [
+      { key: "本体", label: "本体" },
+      { key: "AI/VLA", label: "AI/VLA" },
+      { key: "OS公开", label: "OS/中间件" },
+      { key: "交付", label: "交付/量产" },
+      { key: "商业成果", label: "商业成果" }
+    ];
+
+    const scoreLevelMap = { "强": 5, "中强": 4, "中": 3, "弱中": 2, "弱": 1, "缺": 0 };
+
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    function themeFor(item) {
+      const key = item?.title || "";
+      let hash = 0;
+      for (let i = 0; i < key.length; i += 1) hash = (hash + key.charCodeAt(i) * (i + 3)) % 997;
+      return themeColors[hash % themeColors.length];
+    }
+
+    function scoreValue(value) {
+      return scoreLevelMap[String(value || "").trim()] ?? 0;
+    }
+
+    function svgEl(tag, attrs = {}) {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
+    }
+
+    function radarPoint(index, ratio, radius = 72, cx = 130, cy = 116) {
+      const angle = (-90 + index * 72) * Math.PI / 180;
+      return {
+        x: cx + Math.cos(angle) * radius * ratio,
+        y: cy + Math.sin(angle) * radius * ratio
+      };
+    }
+
+    function pointsAttr(points) {
+      return points.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
+    }
+
+    function renderRadar(item) {
+      const root = document.getElementById("radarCard");
+      root.innerHTML = "";
+      const scores = item.scores || {};
+      if (!radarAxes.every(axis => scores[axis.key])) {
+        root.style.display = "none";
+        return;
+      }
+      root.style.display = "";
+      root.appendChild(el("h3", "", "五轴能力图"));
+      const svg = svgEl("svg", { class: "radar-chart", viewBox: "0 0 260 226", role: "img", "aria-label": `${item.title} 五轴能力图` });
+      for (let level = 1; level <= 5; level += 1) {
+        const poly = svgEl("polygon", {
+          class: "radar-grid",
+          points: pointsAttr(radarAxes.map((_, index) => radarPoint(index, level / 5)))
+        });
+        svg.appendChild(poly);
+      }
+      radarAxes.forEach((axis, index) => {
+        const edge = radarPoint(index, 1);
+        svg.appendChild(svgEl("line", { class: "radar-axis", x1: 130, y1: 116, x2: edge.x.toFixed(1), y2: edge.y.toFixed(1) }));
+      });
+      const valuePoints = radarAxes.map((axis, index) => radarPoint(index, scoreValue(scores[axis.key]) / 5));
+      svg.appendChild(svgEl("polygon", { class: "radar-shape", points: pointsAttr(valuePoints) }));
+      valuePoints.forEach(point => {
+        svg.appendChild(svgEl("circle", { class: "radar-point", cx: point.x.toFixed(1), cy: point.y.toFixed(1), r: 3.2 }));
+      });
+      radarAxes.forEach((axis, index) => {
+        const label = radarPoint(index, 1.38);
+        const value = radarPoint(index, 1.16);
+        const anchor = label.x < 104 ? "end" : label.x > 156 ? "start" : "middle";
+        const text = svgEl("text", { class: "radar-label", x: label.x.toFixed(1), y: label.y.toFixed(1), "text-anchor": anchor });
+        text.textContent = axis.label;
+        svg.appendChild(text);
+        const num = svgEl("text", { class: "radar-value", x: value.x.toFixed(1), y: value.y.toFixed(1), "text-anchor": "middle" });
+        num.textContent = String(scoreValue(scores[axis.key]));
+        svg.appendChild(num);
+      });
+      root.appendChild(svg);
+    }
+
+    function renderRails() {
+      const root = document.getElementById("rails");
+      root.innerHTML = "";
+      rails.forEach(item => root.appendChild(el("span", "rail", item)));
+    }
+
+    function layerInfo(layerId) {
+      return layerRoutes.find(item => item.id === layerId);
+    }
+
+    function layerZone(layerId) {
+      const found = layers.find(([idx]) => idx === layerId);
+      return found ? found[3] : "";
+    }
+
+    function renderMainstreamTable(details) {
+      const wrap = el("div", "route-table-wrap");
+      const table = el("table", "route-detail-table");
+      table.innerHTML = "<thead><tr><th>子域</th><th>主流方案</th><th>标志性方案</th><th>选型判断</th></tr></thead>";
+      const body = el("tbody");
+      details.forEach(row => {
+        const tr = el("tr");
+        row.forEach((cell, index) => {
+          const td = el("td", index === 1 ? "mainstream-cell" : "", cell);
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+      table.appendChild(body);
+      wrap.appendChild(table);
+      return wrap;
+    }
+
+    function renderPlanningInsights(insight) {
+      const grid = el("div", "planner-grid");
+      [
+        ["主流成熟度", insight.maturity, ""],
+        ["产业控制点", insight.control, ""],
+        ["关键卡点", insight.bottleneck, ""],
+        ["现状盘点", insight.inventory, "inventory"]
+      ].forEach(([label, text, mode]) => {
+        const card = el("div", `planner-card ${mode}`.trim());
+        card.appendChild(el("b", "", label));
+        card.appendChild(el("span", "", text));
+        grid.appendChild(card);
+      });
+      return grid;
+    }
+
+    function buildLayerDetail(layerId = state.selectedLayer) {
+      const root = el("div", "layer-detail");
+      root.dataset.zone = layerZone(layerId);
+      const item = layerInfo(layerId);
+      if (!item) return root;
+      const cols = el("div", "route-columns");
+      const route = el("div");
+      route.appendChild(el("b", "", "技术路线"));
+      route.appendChild(el("p", "", item.routes));
+      const flags = el("div");
+      flags.appendChild(el("b", "", "标志性方案"));
+      flags.appendChild(el("p", "", item.flags));
+      cols.appendChild(route);
+      cols.appendChild(flags);
+      root.appendChild(cols);
+      const insight = layerPlanningInsights[item.id];
+      if (insight) root.appendChild(renderPlanningInsights(insight));
+      const details = layerRouteDetails[item.id] || [];
+      if (details.length) root.appendChild(renderMainstreamTable(details));
+      const judgment = el("div", "mainstream-judgment");
+      judgment.appendChild(el("b", "", "主流判断"));
+      judgment.appendChild(el("span", "", item.judgment));
+      root.appendChild(judgment);
+      return root;
+    }
+
+    function renderLayers() {
+      const root = document.getElementById("layerStack");
+      root.innerHTML = "";
+      layers.forEach(([idx, title, note, zone]) => {
+        const card = el("button", idx === state.selectedLayer ? "layer active" : "layer");
+        card.type = "button";
+        card.dataset.zone = zone;
+        card.dataset.layer = idx;
+        card.appendChild(el("div", "layer-index", idx));
+        const body = el("div");
+        body.appendChild(el("h3", "", title));
+        body.appendChild(el("p", "", note));
+        card.appendChild(body);
+        card.addEventListener("click", () => {
+          state.selectedLayer = idx;
+          renderLayers();
+        });
+        root.appendChild(card);
+        if (idx === state.selectedLayer) {
+          root.appendChild(buildLayerDetail(idx));
+        }
+      });
+    }
+
+    function renderCards(items) {
+      const wrap = el("div", "cards");
+      items.forEach(item => {
+        const card = el("button", item === state.selected ? "company-card active" : "company-card");
+        card.type = "button";
+        card.style.setProperty("--theme", themeFor(item));
+        card.appendChild(el("h3", "", item.title));
+        const row = el("div", "tag-row");
+        item.tags.slice(0, 4).forEach(tag => row.appendChild(el("span", "tag", tag)));
+        card.appendChild(row);
+        const advantages = Object.entries(item.scores || {}).filter(([, value]) => String(value).includes("强"));
+        if (advantages.length) {
+          const advantageRow = el("div", "advantage-row");
+          advantages.forEach(([key, value]) => advantageRow.appendChild(el("span", "advantage-chip", `${key} ${value}`)));
+          card.appendChild(advantageRow);
+        }
+        card.appendChild(el("p", "", item.summary));
+        card.addEventListener("click", () => {
+          state.selected = item;
+          renderContent();
+          renderDetail(item);
+        });
+        wrap.appendChild(card);
+      });
+      return wrap;
+    }
+
+    function renderProductRoadmaps() {
+      const wrap = el("div");
+      wrap.appendChild(el("p", "panel-note", "产品规划不应只按技术名词选型，而应拆成可交付路线。下面五条路线分别对应工业、家庭/陪伴、开发者、政采国产和前沿 VLA。"));
+      const grid = el("div", "roadmap-grid");
+      productRoadmaps.forEach(item => {
+        const card = el("section", "roadmap-card");
+        card.appendChild(el("h3", "", item.title));
+        card.appendChild(el("b", "", "技术组合"));
+        card.appendChild(el("p", "", item.stack));
+        card.appendChild(el("b", "", "牵引指标"));
+        card.appendChild(el("p", "", item.metric));
+        grid.appendChild(card);
+      });
+      wrap.appendChild(grid);
+      wrap.appendChild(renderCards(routes));
+      return wrap;
+    }
+
+    function renderLayerRoutes() {
+      const wrap = el("div", "layer-route-list");
+      layerRoutes.forEach(item => {
+        const card = el("section", "layer-route-card");
+        card.appendChild(el("h3", "", `${item.id} ${item.title}`));
+        const cols = el("div", "route-columns");
+        const route = el("div");
+        route.appendChild(el("b", "", "技术路线"));
+        route.appendChild(el("p", "", item.routes));
+        const flags = el("div");
+        flags.appendChild(el("b", "", "标志性方案"));
+        flags.appendChild(el("p", "", item.flags));
+        cols.appendChild(route);
+        cols.appendChild(flags);
+        card.appendChild(cols);
+        const details = layerRouteDetails[item.id] || [];
+        if (details.length) card.appendChild(renderMainstreamTable(details));
+        card.appendChild(el("p", "panel-note", item.judgment));
+        wrap.appendChild(card);
+      });
+      return wrap;
+    }
+
+    function renderRos() {
+      const wrap = el("div");
+      const note = el("p", "panel-note", "ROS 1 已整体进入历史维护语境；ROS 2 新平台建议 Jazzy/Humble 双基线，Rolling 只做预研。");
+      wrap.appendChild(note);
+      const list = el("div", "timeline");
+      releases.forEach(([name, date, eol, status]) => {
+        const row = el("div", "release");
+        row.appendChild(el("strong", "", name));
+        row.appendChild(el("span", "", `发布：${date} / EOL：${eol}`));
+        row.appendChild(el("span", `status ${status === "eol" ? "eol" : status === "dev" ? "dev" : ""}`, status === "eol" ? "EOL" : status === "dev" ? "预研" : "可用"));
+        list.appendChild(row);
+      });
+      wrap.appendChild(list);
+      return wrap;
+    }
+
+    function renderGov() {
+      const wrap = el("div");
+      wrap.appendChild(el("p", "panel-note", "政采 OS 要求主要落在 L3/L2，并向兼容、安全、维护、服务和供应保障横向延伸。"));
+      const table = el("table", "matrix");
+      table.innerHTML = "<thead><tr><th>政采维度</th><th>对应层</th><th>机器人 OS 常见缺口</th></tr></thead>";
+      const body = el("tbody");
+      govRows.forEach(row => {
+        const tr = el("tr");
+        row.forEach(cell => tr.appendChild(el("td", "", cell)));
+        body.appendChild(tr);
+      });
+      table.appendChild(body);
+      wrap.appendChild(table);
+      return wrap;
+    }
+
+    function renderContent() {
+      const root = document.getElementById("contentView");
+      root.innerHTML = "";
+      if (state.view === "companies") root.appendChild(renderCards(companies));
+      if (state.view === "routes") root.appendChild(renderProductRoadmaps());
+      if (state.view === "ros") root.appendChild(renderRos());
+      if (state.view === "gov") root.appendChild(renderGov());
+    }
+
+    function renderStack(item) {
+      const stack = document.getElementById("detailStack");
+      stack.innerHTML = "";
+      const data = companyStacks[item.title];
+      if (!data) {
+        stack.appendChild(el("p", "panel-note", "软件栈路线不按公司产业布局展示，重点看其在 L11-L5 的位置和 L3-L2 缺口。"));
+        return;
+      }
+      stackGroups.forEach(([key, label]) => {
+        const cell = el("div", "stack-cell");
+        cell.appendChild(el("b", "", label));
+        cell.appendChild(el("span", "", data[key]));
+        stack.appendChild(cell);
+      });
+    }
+
+    function renderSources(item) {
+      const root = document.getElementById("detailSources");
+      root.innerHTML = "";
+      const sources = evidenceSources[item.title] || [];
+      if (!sources.length) {
+        root.appendChild(el("p", "panel-note", "当前视图没有单独来源链接，按页面底部资料锚点和本地报告来源处理。"));
+        return;
+      }
+      sources.forEach(source => {
+        const row = el("div", "evidence-item");
+        const link = el("a", "", source.label);
+        link.href = source.href;
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        row.appendChild(link);
+        row.appendChild(el("span", "", source.note));
+        root.appendChild(row);
+      });
+    }
+
+    function renderDetail(item) {
+      const detailPanel = document.querySelector(".detail");
+      if (detailPanel) {
+        detailPanel.style.setProperty("--theme", themeFor(item));
+        detailPanel.classList.remove("refreshed");
+        void detailPanel.offsetWidth;
+        detailPanel.classList.add("refreshed");
+      }
+      document.getElementById("detailType").textContent = item.type || "详情";
+      document.getElementById("detailTitle").textContent = item.title || "详情";
+      document.getElementById("detailSummary").textContent = item.summary || "";
+      renderRadar(item);
+      const scoreGrid = document.getElementById("scoreGrid");
+      scoreGrid.innerHTML = "";
+      Object.entries(item.scores || {}).forEach(([k, v]) => {
+        const box = el("div", `score ${String(v).includes("强") ? "advantage" : ""}`);
+        box.appendChild(el("b", "", v));
+        box.appendChild(el("span", "", k));
+        scoreGrid.appendChild(box);
+      });
+      renderStack(item);
+      const findings = document.getElementById("detailFindings");
+      findings.innerHTML = "";
+      (item.findings || []).forEach(text => findings.appendChild(el("li", "", text)));
+      document.getElementById("detailGov").textContent = item.gov || "";
+      document.getElementById("detailEvidence").textContent = item.evidence || "";
+      document.getElementById("detailCommercial").textContent = item.commercial ? `商业成果：${item.commercial}` : "";
+      renderSources(item);
+    }
+
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
+        btn.classList.add("active");
+        state.view = btn.dataset.view;
+        if (state.view === "routes") state.selected = routes[0];
+        if (state.view === "companies") state.selected = companies[0];
+        renderContent();
+        if (state.view === "routes" || state.view === "companies") renderDetail(state.selected);
+      });
+    });
+
+    renderRails();
+    renderLayers();
+    renderContent();
+    renderDetail(state.selected);
+  </script>
+</body>
+</html>
