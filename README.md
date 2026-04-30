@@ -12,6 +12,5 @@ The private working repository remains the source for internal notes, drafts, an
 
 This repository is designed to publish through GitHub Pages.
 
-- Custom domain: `note.imlarry.cn`
-- Public site path: `/`
+- Public site: `https://note.imlarry.cn/insight-hub/`
 - Report path: `/robot-os-map/`
