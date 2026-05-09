@@ -1566,7 +1566,8 @@
       transform: translateY(-1px);
     }
     .changelog {
-      width: min(420px, calc(100vw - 32px));
+      position: relative;
+      width: max-content;
       pointer-events: none;
     }
     .changelog details {
@@ -1576,6 +1577,10 @@
     }
     .changelog summary::-webkit-details-marker { display: none; }
     .changelog-panel {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: min(420px, calc(100vw - 32px));
       margin-top: 10px;
       max-height: min(62vh, 520px);
       overflow: auto;
@@ -1665,9 +1670,7 @@
         min-height: 34px;
         padding: 0 10px;
       }
-      .changelog {
-        width: calc(100vw - 24px);
-      }
+      .changelog-panel { width: calc(100vw - 24px); }
       .changelog-item { grid-template-columns: 1fr; }
     }
   </style>
