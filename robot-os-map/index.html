@@ -7,34 +7,43 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #f6f7f9;
+      --bg: #f3f5f8;
       --panel: #ffffff;
-      --ink: #17202a;
-      --muted: #667085;
-      --line: #d8dee8;
+      --ink: #182232;
+      --muted: #647084;
+      --soft: #8a95a7;
+      --line: #dbe2ec;
+      --line-strong: #c5cedd;
       --blue: #2458a6;
-      --teal: #1d7c74;
-      --green: #4c7a2b;
-      --amber: #a45f13;
-      --red: #b33b32;
-      --violet: #6f4aa3;
-      --chip: #eef2f6;
-      --shadow: 0 12px 32px rgba(23, 32, 42, 0.08);
+      --teal: #13756f;
+      --green: #47732c;
+      --amber: #a86614;
+      --red: #b0443b;
+      --violet: #6748a4;
+      --chip: #f1f4f8;
+      --panel-tint: #f8fafc;
+      --shadow: 0 16px 42px rgba(24, 34, 50, 0.08);
+      --shadow-soft: 0 8px 22px rgba(24, 34, 50, 0.06);
+      --focus-ring: 0 0 0 3px color-mix(in srgb, var(--theme, var(--blue)) 20%, transparent);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       color: var(--ink);
-      background: var(--bg);
+      background:
+        linear-gradient(90deg, rgba(24, 34, 50, 0.035) 1px, transparent 1px) 0 0 / 36px 36px,
+        linear-gradient(180deg, rgba(24, 34, 50, 0.03) 1px, transparent 1px) 0 0 / 36px 36px,
+        linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0) 320px),
+        var(--bg);
       letter-spacing: 0;
     }
-    a { color: var(--blue); }
+    a { color: var(--blue); text-underline-offset: 2px; }
     .page { max-width: 1800px; margin: 0 auto; padding: 24px; }
     .masthead {
       display: grid;
       grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
-      gap: 16px;
+      gap: 14px;
       align-items: stretch;
       margin-bottom: 16px;
     }
@@ -43,7 +52,40 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
-      padding: 20px;
+      padding: 22px 24px;
+      overflow: hidden;
+    }
+    .title-band {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.98), rgba(245,248,252,0.94)),
+        var(--panel);
+      border-color: #cfd8e6;
+      box-shadow: 0 18px 44px rgba(24, 34, 50, 0.09);
+    }
+    .title-band::before,
+    .brief::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--blue), var(--violet), var(--amber));
+      opacity: 0.82;
+    }
+    .title-band::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      width: 118px;
+      height: 118px;
+      border: 1px solid rgba(36, 88, 166, 0.13);
+      border-radius: 8px;
+      transform: rotate(8deg);
+      pointer-events: none;
+    }
+    .brief {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      box-shadow: var(--shadow-soft);
     }
     .eyebrow {
       font-size: 13px;
@@ -56,6 +98,7 @@
       font-size: clamp(28px, 4vw, 48px);
       line-height: 1.08;
       max-width: 980px;
+      letter-spacing: 0;
     }
     .lead {
       color: var(--muted);
@@ -66,6 +109,9 @@
     }
     .brief strong { display: block; margin-bottom: 10px; }
     .brief p { color: var(--muted); line-height: 1.7; margin: 0; }
+    .title-band, .brief, .metric, .panel {
+      position: relative;
+    }
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -73,11 +119,21 @@
       margin: 16px 0;
     }
     .metric {
-      background: var(--panel);
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 14px;
       min-height: 92px;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+    .metric::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--teal), var(--blue));
+      opacity: 0.55;
     }
     .metric b { display: block; font-size: 24px; margin-bottom: 4px; }
     .metric span { color: var(--muted); font-size: 13px; line-height: 1.45; }
@@ -88,22 +144,39 @@
       align-items: start;
     }
     .panel {
-      background: var(--panel);
+      background: linear-gradient(180deg, #ffffff, #fbfcfe);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
       padding: 16px;
       min-width: 0;
+      backdrop-filter: blur(8px);
     }
     .panel h2 {
       margin: 0 0 8px;
       font-size: 18px;
+      letter-spacing: 0;
     }
     .panel-note {
       margin: 0 0 14px;
       color: var(--muted);
       line-height: 1.6;
       font-size: 13px;
+    }
+    .os-link-panel {
+      border-top: 3px solid rgba(19, 117, 111, 0.68);
+    }
+    .os-link-panel h2::before,
+    .company-toolbar h2::before,
+    .detail h2::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 8px;
+      border-radius: 2px;
+      background: var(--theme, var(--teal));
+      vertical-align: 2px;
     }
     .layer-stack {
       display: grid;
@@ -159,10 +232,11 @@
       border-bottom-left-radius: 8px;
       border-bottom-right-radius: 8px;
       padding: 12px;
-      background: #fff;
+      background: linear-gradient(180deg, #fff, #fbfcfe);
       min-width: 0;
       max-width: 100%;
       overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
     }
     .layer-detail[data-zone="app"] { border-left-color: var(--teal); }
     .layer-detail[data-zone="runtime"] { border-left-color: var(--blue); }
@@ -262,20 +336,23 @@
       border-left: 4px solid transparent;
       border-radius: 8px;
       padding: 12px;
-      background: #fbfcfe;
+      background: linear-gradient(180deg, #ffffff, #f9fbfd);
       cursor: pointer;
       min-height: 132px;
       transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
     }
     .route-card:hover, .company-card:hover,
     .route-card.active, .company-card.active {
-      outline: 2px solid rgba(36, 88, 166, 0.28);
-      border-color: rgba(36, 88, 166, 0.6);
+      outline: none;
+      border-color: color-mix(in srgb, var(--theme, var(--blue)) 42%, var(--line));
+      box-shadow: var(--focus-ring), var(--shadow-soft);
     }
     .company-card.active {
       border-left-color: var(--theme, var(--blue));
-      background: color-mix(in srgb, var(--theme, var(--blue)) 8%, #fff);
-      box-shadow: 0 10px 24px color-mix(in srgb, var(--theme, var(--blue)) 18%, transparent);
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--theme, var(--blue)) 9%, #fff), #fff 52%),
+        #fff;
+      box-shadow: var(--focus-ring), 0 16px 34px color-mix(in srgb, var(--theme, var(--blue)) 16%, transparent);
     }
     .company-card.active h3 {
       color: color-mix(in srgb, var(--theme, var(--blue)) 80%, #17202a);
@@ -298,7 +375,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 3px 7px;
-      background: var(--chip);
+      background: #f6f8fb;
       color: #475467;
     }
     .advantage-row {
@@ -329,7 +406,20 @@
     .detail h2 { font-size: 22px; margin: 0 0 6px; color: color-mix(in srgb, var(--theme, var(--teal)) 72%, #17202a); }
     .detail .type { color: var(--theme, var(--teal)); font-weight: 700; font-size: 13px; margin-bottom: 10px; }
     .detail-block { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
-    .detail-block h3 { margin: 0 0 8px; font-size: 14px; }
+    .detail-block h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .detail-block h3::before {
+      content: "";
+      width: 5px;
+      height: 14px;
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--theme, var(--teal)) 72%, #cfd8e6);
+    }
     .detail-block p, .detail-block li { color: var(--muted); line-height: 1.65; font-size: 13px; }
     .detail-block ul { margin: 0; padding-left: 18px; }
     .stack-grid {
@@ -340,7 +430,8 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px;
-      background: #fbfcfe;
+      background: #f9fbfd;
+      box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme, var(--teal)) 22%, #dbe2ec);
     }
     .stack-cell b {
       display: block;
@@ -362,7 +453,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 9px;
-      background: #fbfcfe;
+      background: #f9fbfd;
       font-size: 12px;
       line-height: 1.55;
     }
@@ -383,10 +474,11 @@
       margin-top: 10px;
     }
     .score {
-      background: var(--chip);
+      background: #f7f9fc;
       border-radius: 8px;
       padding: 10px;
       border: 1px solid var(--line);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.86);
     }
     .score.advantage {
       background: color-mix(in srgb, var(--theme, var(--amber)) 10%, #fff);
@@ -401,10 +493,13 @@
     .radar-card {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fbfcfe;
+      background:
+        linear-gradient(180deg, #ffffff, #f8fafc),
+        #f9fbfd;
       margin: 12px 0 0;
       padding: 10px;
       overflow: hidden;
+      box-shadow: var(--shadow-soft);
     }
     .radar-card h3 {
       margin: 0 0 8px;
@@ -452,6 +547,716 @@
       line-height: 1.55;
       font-size: 12px;
     }
+    .selected-company-bar {
+      position: sticky;
+      top: 16px;
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 12px;
+      padding: 9px 12px;
+      border: 1px solid rgba(197, 206, 221, 0.9);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 12px 30px rgba(24, 34, 50, 0.12);
+      backdrop-filter: blur(18px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 140ms ease, visibility 140ms ease;
+    }
+    .selected-company-bar.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .selected-company-main {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+    .selected-company-main strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .selected-company-main span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .selected-company-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+      max-width: 36%;
+    }
+
+    .company-band {
+      margin: 16px 0;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 140ms ease, visibility 140ms ease;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,252,254,0.96)),
+        #fff;
+    }
+    .company-band::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--blue), var(--violet), var(--amber));
+      opacity: 0.82;
+    }
+    .company-band.hidden-by-sticky {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      height: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+    .company-toolbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      padding-top: 2px;
+    }
+    .company-toolbar h2 { margin: 0 0 6px; font-size: 20px; }
+    .company-toolbar .panel-note { margin: 0; }
+    .company-filters {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 12px;
+    }
+    .filter-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid #e6ecf3;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.9), rgba(245,248,252,0.94));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+    }
+    .filter-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #e9eef5;
+      color: #3d4859;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .filter-chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #435066;
+      border-radius: 999px;
+      min-height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+      transition: border-color 140ms ease, background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+    }
+    .filter-chip:hover {
+      border-color: var(--line-strong);
+      background: #f8fafc;
+    }
+    .filter-chip.group.active {
+      background: #edf7f4;
+      border-color: #abd9cc;
+      color: var(--teal);
+      box-shadow: 0 0 0 2px rgba(19, 117, 111, 0.08);
+    }
+    .filter-chip.stage.active {
+      background: #fff6e6;
+      border-color: #ebcc8e;
+      color: #87540d;
+      box-shadow: 0 0 0 2px rgba(168, 102, 20, 0.08);
+    }
+    .company-scroll {
+      position: relative;
+      min-height: 72px;
+      padding: 2px 2px 10px;
+    }
+    .company-scroll .company-card {
+      min-height: 72px;
+      width: 100%;
+      transition: box-shadow 140ms ease, outline-color 140ms ease, border-color 140ms ease, background 140ms ease, transform 140ms ease;
+      box-shadow: 0 6px 16px rgba(24, 34, 50, 0.045);
+    }
+    .company-scroll .company-card:hover {
+      transform: translateY(-1px);
+    }
+    .company-scroll.masonry-active .company-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .company-card-header {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+    .company-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 9px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(255,255,255,0.88);
+      box-shadow: 0 6px 14px rgba(24,34,50,0.16), inset 0 1px 0 rgba(255,255,255,0.75);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .company-logo svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #fff;
+    }
+    .company-logo-fg {
+      fill: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .company-logo-subtle {
+      fill: rgba(255,255,255,0.18);
+    }
+    .company-card-main {
+      min-width: 0;
+    }
+    .company-card-main h3 {
+      margin: 0 0 2px;
+      font-size: 14px;
+      line-height: 1.2;
+      color: #111827;
+    }
+    .company-card-main p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .company-card-type {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #edf3f7;
+      color: #435066;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .company-card-expanded {
+      display: grid;
+      gap: 9px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid color-mix(in srgb, var(--theme, var(--blue)) 18%, var(--line));
+      position: relative;
+    }
+    .company-card-expanded::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 0;
+      width: 64px;
+      height: 1px;
+      background: var(--theme, var(--blue));
+    }
+    .company-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .company-card-expanded .tag-row {
+      margin: 0;
+    }
+    .company-score-row,
+    .company-window-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .company-card p {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .company-card .detail-block {
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+    .company-card .detail-block h3 {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .company-card .detail-block p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .subtag-card {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .subtag-card.group {
+      background: #edf7f4;
+      border-color: #abd9cc;
+      color: var(--teal);
+    }
+    .subtag-card.stage {
+      background: #fff6e6;
+      border-color: #ebcc8e;
+      color: #87540d;
+    }
+    .layer-band-list {
+      display: grid;
+      gap: 10px;
+    }
+    .layer-band {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(24, 34, 50, 0.045);
+    }
+    .layer-band[open] {
+      background: #fff;
+      border-color: color-mix(in srgb, var(--theme, var(--blue)) 18%, var(--line));
+    }
+    .layer-band-header {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 12px 10px;
+      display: grid;
+      gap: 8px;
+      background: linear-gradient(180deg, rgba(248,250,252,0.9), rgba(255,255,255,0.96));
+      border-bottom: 1px solid rgba(219, 226, 236, 0.72);
+    }
+    .layer-band-header::-webkit-details-marker { display: none; }
+    .layer-band-header h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+    .layer-band-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .layer-band-grid {
+      display: grid;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+    .layer-mini {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px 10px;
+      text-align: left;
+      color: var(--ink);
+      font: inherit;
+      cursor: pointer;
+      transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+    }
+    .layer-mini:hover {
+      border-color: var(--line-strong);
+      background: #fbfdff;
+    }
+    .layer-mini .layer-status-row {
+      margin: 0 0 4px;
+    }
+    .layer-mini b {
+      font-size: 13px;
+    }
+    .layer-mini p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .layer-mini.active {
+      outline: none;
+      border-color: color-mix(in srgb, var(--theme, var(--blue)) 42%, var(--line));
+      background: color-mix(in srgb, var(--theme, var(--blue)) 5%, #fff);
+      box-shadow: var(--focus-ring);
+    }
+    .modal-close {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #273348;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), var(--shadow-soft);
+      transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+    }
+    .modal-close:hover {
+      border-color: var(--line-strong);
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+    .matrix-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 5vh 5vw;
+      background: rgba(16, 24, 40, 0.42);
+      backdrop-filter: blur(14px);
+    }
+    .matrix-modal.open {
+      display: flex;
+    }
+    body.matrix-modal-open {
+      overflow: hidden;
+    }
+    .matrix-dialog {
+      width: min(90vw, 1680px);
+      height: min(90vh, 980px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      border: 1px solid rgba(219, 226, 236, 0.94);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff, #f8fafc);
+      box-shadow: 0 30px 80px rgba(16, 24, 40, 0.22);
+      overflow: hidden;
+    }
+    .matrix-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .matrix-modal-title {
+      min-width: 0;
+    }
+    .matrix-modal-title h3 {
+      margin: 0 0 3px;
+      font-size: 18px;
+    }
+    .matrix-modal-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .modal-close {
+      flex: 0 0 auto;
+      min-height: 32px;
+      padding: 0 12px;
+    }
+    .matrix-modal-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 12px;
+    }
+    .matrix-modal .matrix-wrap {
+      margin: 0;
+      border: 0;
+      max-height: none;
+      overflow: visible;
+      background: transparent;
+    }
+    .matrix-density {
+      min-width: 1320px;
+      display: grid;
+      gap: 8px;
+    }
+    .matrix-density-head,
+    .matrix-density-row {
+      display: grid;
+      grid-template-columns: 250px repeat(4, minmax(230px, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+    .matrix-density-head {
+      position: sticky;
+      top: -12px;
+      z-index: 3;
+      padding: 0 0 4px;
+      background: linear-gradient(180deg, #f8fafc 78%, rgba(248,250,252,0));
+    }
+    .matrix-density-head > div {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #eef3f8;
+      padding: 8px 10px;
+      color: #283447;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.3;
+    }
+    .matrix-density-row {
+      border: 1px solid #e6ecf2;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.78);
+      padding: 7px;
+      box-shadow: 0 5px 14px rgba(24, 34, 50, 0.035);
+    }
+    .matrix-density-row.is-selected {
+      border-color: color-mix(in srgb, var(--theme, var(--blue)) 48%, var(--line));
+      background: color-mix(in srgb, var(--theme, var(--blue)) 5%, #fff);
+      box-shadow: var(--focus-ring), 0 8px 18px color-mix(in srgb, var(--theme, var(--blue)) 10%, transparent);
+    }
+    .matrix-company-cell {
+      position: sticky;
+      left: -12px;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 7px;
+      box-shadow: 6px 0 14px rgba(248, 250, 252, 0.92);
+    }
+    .matrix-company-cell .company-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+    }
+    .matrix-company-meta {
+      min-width: 0;
+    }
+    .matrix-company-meta strong {
+      display: block;
+      color: #111827;
+      font-size: 13px;
+      line-height: 1.25;
+      margin-bottom: 3px;
+      overflow-wrap: anywhere;
+    }
+    .matrix-company-meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .matrix-band-cell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 6px;
+    }
+    .matrix-band-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 5px;
+      color: #283447;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .matrix-band-count {
+      color: var(--muted);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .matrix-band-grid {
+      display: grid;
+      gap: 4px;
+    }
+    .matrix-cell {
+      border: 1px solid #edf1f5;
+      border-radius: 6px;
+      padding: 4px 6px;
+      background: #fafcfe;
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 6px;
+      align-items: start;
+      box-shadow: inset 4px 0 0 #dbe2ec;
+    }
+    .matrix-cell.core {
+      background: #e3f7ef;
+      border-color: #78c7aa;
+      box-shadow: inset 4px 0 0 #138466;
+    }
+    .matrix-cell.extend {
+      background: #fff1cf;
+      border-color: #d69a2d;
+      box-shadow: inset 4px 0 0 #b96c08;
+    }
+    .matrix-cell.gap {
+      background: #ffe3df;
+      border-color: #d7857d;
+      box-shadow: inset 4px 0 0 #bd3d34;
+    }
+    .matrix-cell .matrix-cell-status {
+      display: block;
+      margin-bottom: 0;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    .matrix-cell.core .matrix-cell-status { color: #075f49; }
+    .matrix-cell.extend .matrix-cell-status { color: #7a4100; }
+    .matrix-cell.gap .matrix-cell-status { color: #8f261f; }
+    .matrix-cell span:last-child {
+      display: block;
+      color: var(--muted);
+      font-size: 10.5px;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(520px, 1.2fr) minmax(360px, 0.8fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .os-link-panel h2 { margin-bottom: 6px; }
+    .layer-status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 5px;
+    }
+    .layer-status-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      border: 1px solid var(--line);
+      background: #f5f7fa;
+      color: #526070;
+    }
+    .layer-status-chip.core { background: #dff5ec; border-color: #78c7aa; color: #075f49; }
+    .layer-status-chip.extend { background: #fff1cf; border-color: #d69a2d; color: #7a4100; }
+    .layer-status-chip.gap { background: #ffe3df; border-color: #d7857d; color: #8f261f; }
+    .layer-status-chip.core,
+    .layer-status-chip.extend,
+    .layer-status-chip.gap {
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+    }
+    .company-layer-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .matrix-wrap {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: auto;
+      background: var(--panel);
+      max-height: 620px;
+    }
+    .layer-matrix {
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1900px;
+      width: max-content;
+      font-size: 12px;
+    }
+    .layer-matrix th, .layer-matrix td {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      vertical-align: top;
+      text-align: left;
+      background: #fff;
+      min-width: 124px;
+      max-width: 150px;
+      line-height: 1.45;
+    }
+    .layer-matrix th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #eef2f6;
+      color: #293547;
+      font-weight: 800;
+    }
+    .layer-matrix th:first-child,
+    .layer-matrix td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      min-width: 210px;
+      max-width: 230px;
+      font-weight: 800;
+      color: var(--ink);
+      background: #f7f9fc;
+    }
+    .layer-matrix th:first-child { z-index: 4; background: #e8eef6; }
+    .matrix-cell-status {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 900;
+      font-size: 11px;
+    }
+    .layer-matrix td.core { background: #f2fbf7; }
+    .layer-matrix td.extend { background: #fffaf0; }
+    .layer-matrix td.gap { background: #fff5f4; }
+    .layer-matrix td.core .matrix-cell-status { color: var(--teal); }
+    .layer-matrix td.extend .matrix-cell-status { color: #87540d; }
+    .layer-matrix td.gap .matrix-cell-status { color: var(--red); }
+    .source-type {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 0 7px;
+      margin-right: 6px;
+      border-radius: 999px;
+      background: #edf3f7;
+      color: #435066;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
     .timeline {
       display: grid;
       gap: 8px;
@@ -709,9 +1514,133 @@
       line-height: 1.6;
       font-size: 13px;
     }
+    .floating-actions {
+      position: fixed;
+      right: 22px;
+      top: 22px;
+      z-index: 24;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .matrix-float-btn,
+    .changelog summary {
+      list-style: none;
+      cursor: pointer;
+      width: max-content;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      border: 1px solid rgba(197, 206, 221, 0.96);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      color: #273348;
+      box-shadow: 0 14px 36px rgba(16, 24, 40, 0.14);
+      backdrop-filter: blur(16px);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .matrix-float-btn {
+      pointer-events: auto;
+    }
+    .matrix-float-btn::before,
+    .changelog summary::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+    }
+    .matrix-float-btn::before {
+      background: linear-gradient(135deg, var(--violet), var(--amber));
+    }
+    .matrix-float-btn:hover,
+    .changelog summary:hover {
+      border-color: var(--line-strong);
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+    .changelog {
+      width: min(420px, calc(100vw - 32px));
+      pointer-events: none;
+    }
+    .changelog details {
+      display: grid;
+      justify-items: end;
+      pointer-events: auto;
+    }
+    .changelog summary::-webkit-details-marker { display: none; }
+    .changelog-panel {
+      margin-top: 10px;
+      max-height: min(62vh, 520px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 24px 70px rgba(16, 24, 40, 0.18);
+      backdrop-filter: blur(18px);
+    }
+    .changelog-header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+    }
+    .changelog-header b {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+    .changelog-header span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .changelog-list {
+      display: grid;
+      gap: 0;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .changelog-item {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr);
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid #edf1f5;
+    }
+    .changelog-item:last-child { border-bottom: 0; }
+    .changelog-date {
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+    .changelog-copy strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+    .changelog-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
     @media (max-width: 1280px) {
-      .layout { grid-template-columns: 1fr; }
+      .workspace { grid-template-columns: 1fr; }
       .detail { position: static; }
+      .selected-company-highlights { max-width: 100%; justify-content: flex-start; }
     }
     @media (max-width: 860px) {
       .page { padding: 14px; }
@@ -722,6 +1651,24 @@
       .release { grid-template-columns: 1fr; }
       .route-columns { grid-template-columns: 1fr; }
       .planner-grid { grid-template-columns: 1fr; }
+      .selected-company-bar { display: none !important; }
+      .floating-actions {
+        right: 12px;
+        top: 12px;
+        left: 12px;
+        align-items: flex-start;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .matrix-float-btn,
+      .changelog summary {
+        min-height: 34px;
+        padding: 0 10px;
+      }
+      .changelog {
+        width: calc(100vw - 24px);
+      }
+      .changelog-item { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -740,30 +1687,32 @@
     </section>
 
     <section class="metric-grid" aria-label="关键结论">
-      <div class="metric"><b>25</b><span>人形机器人公司样本逐家映射 OS 产业栈</span></div>
+      <div class="metric"><b>26</b><span>人形机器人与泛人形具身公司样本逐家映射 OS 产业栈</span></div>
       <div class="metric"><b>14</b><span>从应用任务到芯片硬件的机器人 OS 分层</span></div>
       <div class="metric"><b>5 轴</b><span>本体、AI、OS 公开、交付和商业成果五芒星评分</span></div>
       <div class="metric"><b>证据链</b><span>每家公司保留公开来源、商业成果和未公开边界</span></div>
     </section>
 
-    <section class="layout">
-      <article class="panel" aria-label="机器人 OS 分层">
-        <h2>机器人 OS 产业栈</h2>
-        <p class="panel-note">按控制权拆层：每层展开后先看主流成熟度、产业控制点、关键卡点和现状盘点，再看具体主流方案。</p>
+    <div class="selected-company-bar" id="selectedCompanyBar" aria-label="当前选中公司"></div>
+
+    <section class="panel company-band" aria-label="公司产业地图">
+      <div class="company-toolbar">
+        <div>
+          <h2>公司产业地图</h2>
+          <p class="panel-note">公司模块作为主视图横向通栏展示。点击任一公司后，下方 OS 产业栈、右侧详情、五轴雷达、证据窗口和完整矩阵同步刷新。</p>
+        </div>
+        <span class="layer-status-chip core">26 家样本</span>
+      </div>
+      <div class="company-filters" id="companyFilters"></div>
+      <div id="companyBand"></div>
+    </section>
+
+    <section class="workspace">
+      <article class="panel os-link-panel" aria-label="机器人 OS 分层联动">
+        <h2>机器人 OS 产业栈联动</h2>
+        <p class="panel-note" id="layerPanelNote">按选中公司显示 L14-L1 的核心覆盖、延伸覆盖和缺口。点击层级查看该公司在该层的布局，同时保留通用技术路线。</p>
         <div class="rails" id="rails"></div>
         <div class="layer-stack" id="layerStack"></div>
-      </article>
-
-      <article class="panel" aria-label="路线与公司">
-        <h2>公司与 OS 产业栈</h2>
-        <p class="panel-note">公司地图是主视图；机器人 OS 产业栈细化内容已移动到左侧，点击左侧任一层后在该面板下方展开。点击公司卡片后右侧显示五芒星图、布局、证据和边界。</p>
-        <div class="tabs" role="tablist">
-          <button class="tab active" data-view="companies" type="button">公司产业地图</button>
-          <button class="tab" data-view="routes" type="button">软件栈路线</button>
-          <button class="tab" data-view="ros" type="button">ROS 版本</button>
-          <button class="tab" data-view="gov" type="button">政采缺口</button>
-        </div>
-        <div id="contentView"></div>
       </article>
 
       <aside class="panel detail" aria-label="详情">
@@ -790,6 +1739,10 @@
           <p class="commercial-note" id="detailCommercial"></p>
         </div>
         <div class="detail-block">
+          <h3>对外窗口</h3>
+          <div class="evidence-list" id="detailWindows"></div>
+        </div>
+        <div class="detail-block">
           <h3>核验证据</h3>
           <div class="evidence-list" id="detailSources"></div>
         </div>
@@ -797,8 +1750,52 @@
     </section>
 
     <section class="source-strip">
-      资料锚点：公司官方页面、公告、财报/招股书、客户案例、正式合作新闻、ROS 2 Distributions、REP-2000、Open-RMF、MoveIt、Nav2、ros2_control、NVIDIA Isaac ROS / Isaac Sim / Jetson、Gazebo、MuJoCo、Fast DDS、Cyclone DDS、Zenoh、micro-ROS、Zephyr、FreeRTOS、Mender/RAUC/SWUpdate、OpenHarmony / 国产 Linux、LOVOT、ElliQ、Moxie 等公开资料，以及本地《操作系统政府采购需求标准（2023年版）》主表分析。公司证据以右侧“核验证据”为准，商业成果按 2026-04-30 可复核公开信息保守评分。
+      资料锚点：公司官方页面、公告、财报/招股书、客户案例、正式合作新闻、ROS 2 Distributions、REP-2000、Open-RMF、MoveIt、Nav2、ros2_control、NVIDIA Isaac ROS / Isaac Sim / Jetson、Gazebo、MuJoCo、Fast DDS、Cyclone DDS、Zenoh、micro-ROS、Zephyr、FreeRTOS、Mender/RAUC/SWUpdate、OpenHarmony / 国产 Linux、LOVOT、ElliQ、Moxie、WALL-OSS / wall-x 等公开资料，以及本地《操作系统政府采购需求标准（2023年版）》主表分析。公司证据以右侧“核验证据”为准，商业成果按 2026-05-07 可复核公开信息保守评分。
     </section>
+    <div class="floating-actions" aria-label="页面操作">
+      <button class="matrix-float-btn" id="openMatrixModal" type="button">产业栈全景</button>
+      <aside class="changelog" aria-label="更新日志">
+        <details>
+          <summary>更新日志</summary>
+          <div class="changelog-panel">
+            <div class="changelog-header">
+              <b>更新日志</b>
+              <span>仅记录正式内容变化，不记录编辑过程。</span>
+            </div>
+            <ul class="changelog-list">
+              <li class="changelog-item">
+                <span class="changelog-date">2026-05-09</span>
+                <span class="changelog-copy">
+                  <strong>功能与阅读体验优化</strong>
+                  <span>公司产业地图、机器人 OS 产业栈联动、右侧详情、证据窗口和完整 26×14 对照完成产品化呈现；完整矩阵升级为 PC 高密度大窗视图，并强化核心覆盖、延伸覆盖、缺口/未公开的状态识别。</span>
+                </span>
+              </li>
+              <li class="changelog-item">
+                <span class="changelog-date">2026-05-07</span>
+                <span class="changelog-copy">
+                  <strong>调研范围扩大</strong>
+                  <span>样本扩展至 26 家公司，新增自变量 X Square Robot，并同步补齐公司分组、五轴评分、商业成果判断、对外窗口和 L14-L1 OS 栈分层映射。</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </details>
+      </aside>
+    </div>
+    <div class="matrix-modal" id="matrixModal" role="dialog" aria-modal="true" aria-labelledby="matrixModalTitle" aria-hidden="true">
+      <div class="matrix-dialog">
+        <div class="matrix-modal-header">
+          <div class="matrix-modal-title">
+            <h3 id="matrixModalTitle">完整 26×14 对照</h3>
+            <p>按当前筛选结果和选中公司同步刷新；每家公司展开后查看 L14-L1 四段布局。</p>
+          </div>
+          <button class="modal-close" id="closeMatrixModal" type="button" aria-label="关闭完整 26×14 对照">关闭</button>
+        </div>
+        <div class="matrix-modal-body">
+          <div class="matrix-wrap" id="matrixView"></div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script>
@@ -1088,7 +2085,7 @@
 
     const companies = [
       {
-        title: "Figure AI", type: "通用人形 / VLA", region: "美国",
+        title: "Figure AI", group: "具身模型先行派", commercialStage: "重点客户试点", type: "通用人形 / VLA", region: "美国",
         summary: "Figure 03 与 Helix 把本体、家庭任务和具身 AI 绑定，主战场在本体、VLA、家庭任务和数据闭环。",
         tags: ["Figure 03", "Helix", "家庭任务", "VLA"],
         scores: { "本体": "强", "AI/VLA": "强", "OS公开": "弱中", "交付": "中强", "商业成果": "中" },
@@ -1098,7 +2095,7 @@
         commercial: "商业成果按早期规模爬坡评价：BotQ 已公开 350 台以上 Figure 03，但外部付费客户和收入规模仍未充分披露。"
       },
       {
-        title: "Tesla Optimus", type: "车企垂直体系", region: "美国",
+        title: "Tesla Optimus", group: "汽车 / 制造生态派", commercialStage: "展示 / 观察", type: "车企垂直体系", region: "美国",
         summary: "优势来自制造、供应链、自动驾驶 AI 和工厂场景，但外部 OS 生态开放度低。",
         tags: ["制造", "自动驾驶 AI", "垂直体系"],
         scores: { "本体": "强", "AI/VLA": "强", "OS公开": "弱", "交付": "中", "商业成果": "弱" },
@@ -1108,7 +2105,7 @@
         commercial: "商业成果按 Optimus 独立产品评价，不按 Tesla 整车收入外推；当前主要是内部验证和产线规划。"
       },
       {
-        title: "Boston Dynamics Atlas", type: "工业高性能人形", region: "美国",
+        title: "Boston Dynamics Atlas", group: "工业 / 仓储部署派", commercialStage: "重点客户试点", type: "工业高性能人形", region: "美国",
         summary: "Atlas 强在运动控制和工业机器人经验，正在从研究展示转向企业应用叙事。",
         tags: ["Atlas", "工业", "运动控制"],
         scores: { "本体": "强", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "弱中" },
@@ -1118,7 +2115,7 @@
         commercial: "公司整体有 Spot / Stretch / Orbit 商业基础，但 Atlas 新一代人形尚未形成公开多客户销售证据。"
       },
       {
-        title: "Agility Robotics", type: "仓储 / 制造部署", region: "美国",
+        title: "Agility Robotics", group: "工业 / 仓储部署派", commercialStage: "规模交付", type: "仓储 / 制造部署", region: "美国",
         summary: "Digit + Arc 是较完整的机器人产品化样本，覆盖 fleet、监控、集成、服务和现场部署。",
         tags: ["Digit", "Arc", "fleet", "仓储"],
         scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "强", "商业成果": "强" },
@@ -1128,7 +2125,7 @@
         commercial: "商业成果较强，已围绕 GXO、Toyota、Mercado Libre、Schaeffler 等客户或合作方形成真实场景验证和商业协议。"
       },
       {
-        title: "Apptronik Apollo", type: "工业通用人形", region: "美国",
+        title: "Apptronik Apollo", group: "工业 / 仓储部署派", commercialStage: "重点客户试点", type: "工业通用人形", region: "美国",
         summary: "Apollo 公开强调模块化、热插拔电池、仓储制造、安全区域和点选式软件套件。",
         tags: ["Apollo", "仓储", "制造", "安全"],
         scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "中强", "商业成果": "中强" },
@@ -1138,7 +2135,7 @@
         commercial: "商业成果来自 Mercedes-Benz、Jabil 等重点客户试点 / 合作和制造场景拓展，仍需验证规模部署收入。"
       },
       {
-        title: "Sanctuary AI", type: "灵巧操作 / embodied AI", region: "加拿大",
+        title: "Sanctuary AI", group: "具身模型先行派", commercialStage: "重点客户试点", type: "灵巧操作 / embodied AI", region: "加拿大",
         summary: "Phoenix 强调 industrial-grade humanoid、dexterity、tactile feedback 和 fine manipulation。",
         tags: ["Phoenix", "灵巧手", "触觉", "工业"],
         scores: { "本体": "中", "AI/VLA": "强", "OS公开": "弱", "交付": "中", "商业成果": "中" },
@@ -1148,7 +2145,7 @@
         commercial: "商业成果属于工业客户试点和早期付费部署阶段，尚未形成大规模标准化交付证据。"
       },
       {
-        title: "1X NEO", type: "家庭人形", region: "挪威 / 美国",
+        title: "1X NEO", group: "家庭服务派", commercialStage: "预订 / 小批量", type: "家庭人形", region: "挪威 / 美国",
         summary: "NEO 公开预订、Redwood AI、Expert Mode、软体安全、本地和远程控制、Jetson Thor 计算。",
         tags: ["NEO", "Redwood AI", "家庭", "远程专家"],
         scores: { "本体": "强", "AI/VLA": "强", "OS公开": "弱中", "交付": "中", "商业成果": "中" },
@@ -1158,7 +2155,7 @@
         commercial: "商业成果按预订销售和早期家庭服务准备评价，关键还要看 2026 年交付后的留存、安全和服务成本。"
       },
       {
-        title: "Engineered Arts Ameca", type: "社交交互人形", region: "英国",
+        title: "Engineered Arts Ameca", group: "陪伴 / 情感交互派", commercialStage: "规模交付", type: "社交交互人形", region: "英国",
         summary: "Ameca 强在人脸表情、对话、展陈和社交交互，不是工业作业人形主线。",
         tags: ["Ameca", "社交", "展陈"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱中", "交付": "中", "商业成果": "中" },
@@ -1168,7 +2165,7 @@
         commercial: "商业成果集中在展陈、接待、租赁和销售型社交机器人市场，不能外推为劳动型人形规模交付。"
       },
       {
-        title: "NEURA Robotics", type: "认知机器人 / 工业生态", region: "德国",
+        title: "NEURA Robotics", group: "工业 / 仓储部署派", commercialStage: "重点客户试点", type: "认知机器人 / 工业生态", region: "德国",
         summary: "覆盖协作机器人、认知机器人和人形路线，价值在工业安全、传感和认知机器人产品组合。",
         tags: ["4NE-1", "认知机器人", "工业"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱中", "交付": "中", "商业成果": "中强" },
@@ -1178,7 +2175,7 @@
         commercial: "公司整体协作机器人和认知机器人商业基础较强，人形产品仍需与既有机器人订单分开评价。"
       },
       {
-        title: "PAL Robotics", type: "科研 / 服务机器人平台", region: "西班牙",
+        title: "PAL Robotics", group: "低成本开放生态派", commercialStage: "开发平台扩散", type: "科研 / 服务机器人平台", region: "西班牙",
         summary: "TALOS、REEM-C 等平台具有科研和 ROS 生态价值，适合观察开发者友好机器人平台。",
         tags: ["TALOS", "REEM-C", "ROS", "科研"],
         scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "中", "交付": "中", "商业成果": "中" },
@@ -1188,7 +2185,7 @@
         commercial: "商业成果稳定但小众，主要来自高校、研究机构和服务机器人平台付费采购。"
       },
       {
-        title: "Unitree", type: "低成本开放生态", region: "中国",
+        title: "Unitree", group: "低成本开放生态派", commercialStage: "规模交付", type: "低成本开放生态", region: "中国",
         summary: "G1/H1/R1 与灵巧手、LiDAR、组件和二次开发生态使其成为开发者和教育科研的重要平台。",
         tags: ["G1", "H1", "二次开发", "低成本"],
         scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "强", "商业成果": "强" },
@@ -1198,7 +2195,7 @@
         commercial: "商业成果强在可购买 SKU、全球开发者扩散、教育科研和轻量商业销售；工业服务闭环仍需补强。"
       },
       {
-        title: "UBTECH", type: "国内产业化 / 教育服务", region: "中国",
+        title: "UBTECH", group: "工业 / 仓储部署派", commercialStage: "规模交付", type: "国内产业化 / 教育服务", region: "中国",
         summary: "Walker 系列面向工业和商业，UBTECH 有较强国内客户、渠道和服务基础。",
         tags: ["Walker", "工业", "教育", "服务"],
         scores: { "本体": "强", "AI/VLA": "中", "OS公开": "弱中", "交付": "强", "商业成果": "强" },
@@ -1208,7 +2205,7 @@
         commercial: "商业成果来自上市公司收入基础、国内客户 / 服务网络和 Walker 系列量产交付信号，但需拆分整机订单与 OS 合规证据。"
       },
       {
-        title: "Fourier Intelligence", type: "康复到通用人形", region: "中国",
+        title: "Fourier Intelligence", group: "国产具身创业派", commercialStage: "重点客户试点", type: "康复到通用人形", region: "中国",
         summary: "从康复机器人扩展到 GRx / GR-1 / GR-2，人形路线具备运动控制和执行器基础。",
         tags: ["GR-2", "康复", "执行器"],
         scores: { "本体": "强", "AI/VLA": "中", "OS公开": "弱中", "交付": "中强", "商业成果": "中强" },
@@ -1218,7 +2215,7 @@
         commercial: "商业成果以康复机器人和科研平台为基础，通用人形商业化仍需单独验证。"
       },
       {
-        title: "AgiBot 智元", type: "国产全栈 / 开源生态", region: "中国",
+        title: "AgiBot 智元", group: "国产具身创业派", commercialStage: "规模交付", type: "国产全栈 / 开源生态", region: "中国",
         summary: "A2、X、Genie、D1、C5 等产品线覆盖全尺寸人形、柔性制造、开源机器人和具身智能。",
         tags: ["A2", "X1/X2", "开源", "具身智能"],
         scores: { "本体": "强", "AI/VLA": "强", "OS公开": "中", "交付": "强", "商业成果": "强" },
@@ -1228,7 +2225,7 @@
         commercial: "商业成果在国产具身创业公司中靠前，重点转向 SKU 差异、客户结构、交付质量和长期维护验证。"
       },
       {
-        title: "Xpeng Robotics", type: "车企生态人形", region: "中国",
+        title: "Xpeng Robotics", group: "汽车 / 制造生态派", commercialStage: "展示 / 观察", type: "车企生态人形", region: "中国",
         summary: "小鹏具备车企制造、感知、自动驾驶和供应链基础，人形产品开放度仍需持续核验。",
         tags: ["IRON", "车企", "制造"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "弱" },
@@ -1238,7 +2235,7 @@
         commercial: "商业成果主要来自车企资源和内部验证潜力，独立机器人客户、订单和收入证据不足。"
       },
       {
-        title: "Xiaomi Robotics", type: "手机 / IoT / 家庭生态", region: "中国",
+        title: "Xiaomi Robotics", group: "家庭服务派", commercialStage: "展示 / 观察", type: "手机 / IoT / 家庭生态", region: "中国",
         summary: "小米的优势在手机 OS、IoT、端侧硬件和家庭生态入口，人形整机不是唯一价值点。",
         tags: ["CyberOne", "IoT", "端侧", "家庭"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "中", "交付": "弱中", "商业成果": "弱" },
@@ -1248,7 +2245,7 @@
         commercial: "商业成果不能按小米集团 IoT 收入直接外推，人形机器人缺少明确 SKU、客户和交付收入证据。"
       },
       {
-        title: "Galbot 银河通用", type: "具身多模态大模型", region: "中国",
+        title: "Galbot 银河通用", group: "具身模型先行派", commercialStage: "重点客户试点", type: "具身多模态大模型", region: "中国",
         summary: "定位具身多模态大模型通用机器人，强调服务行业与家庭。",
         tags: ["具身多模态", "通用机器人"],
         scores: { "本体": "中", "AI/VLA": "强", "OS公开": "弱", "交付": "中强", "商业成果": "中强" },
@@ -1258,7 +2255,7 @@
         commercial: "商业成果强于纯模型公司，已有真实行业场景信号，但订单规模、运维成本和跨场景复制仍需核验。"
       },
       {
-        title: "RobotEra 星动纪元", type: "国产人形创业", region: "中国",
+        title: "RobotEra 星动纪元", group: "国产具身创业派", commercialStage: "展示 / 观察", type: "国产人形创业", region: "中国",
         summary: "侧重人形本体、运动控制和具身智能，公开演示能力较强。",
         tags: ["STAR1", "XBot", "运动控制"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "中" },
@@ -1268,7 +2265,7 @@
         commercial: "商业成果主要来自产品展示、融资和早期项目验证，尚缺稳定多客户交付与收入规模证据。"
       },
       {
-        title: "LimX Dynamics 逐际动力", type: "具身 Agentic OS / 多形态", region: "中国",
+        title: "LimX Dynamics 逐际动力", group: "国产具身创业派", commercialStage: "开发平台扩散", type: "具身 Agentic OS / 多形态", region: "中国",
         summary: "公开 Oli、TRON 1/2、FluxVLA Engine、LimX COSA Agentic OS、VGM 和 DreamActor。",
         tags: ["Oli", "TRON", "COSA", "FluxVLA"],
         scores: { "本体": "强", "AI/VLA": "中", "OS公开": "中", "交付": "中", "商业成果": "中" },
@@ -1278,7 +2275,7 @@
         commercial: "商业成果以开发平台、预订和技术生态扩散为主，量产交付和客户闭环还需继续核验。"
       },
       {
-        title: "Kepler", type: "国产通用人形", region: "中国",
+        title: "Kepler", group: "国产具身创业派", commercialStage: "预订 / 小批量", type: "国产通用人形", region: "中国",
         summary: "Forerunner 系列面向商业和工业场景，需持续核验量产、API 和现场交付。",
         tags: ["Forerunner", "商业", "工业"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中强", "商业成果": "中强" },
@@ -1288,7 +2285,7 @@
         commercial: "商业成果按早期小批量交付评价，仍需供应商规格书、客户验收和服务体系证据支撑。"
       },
       {
-        title: "Leju Robotics", type: "开源鸿蒙 / 教育生态", region: "中国",
+        title: "Leju Robotics", group: "低成本开放生态派", commercialStage: "开发平台扩散", type: "开源鸿蒙 / 教育生态", region: "中国",
         summary: "Kuavo 与开源鸿蒙、教育科研和开源生态相关，对国产 OS 验证有特殊价值。",
         tags: ["Kuavo", "OpenHarmony", "开源", "教育"],
         scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "中", "交付": "中", "商业成果": "中" },
@@ -1298,7 +2295,7 @@
         commercial: "商业成果集中在教育科研、开源生态、竞赛和国产 OS 适配验证，不按工业规模收入评价。"
       },
       {
-        title: "Booster Robotics", type: "教育竞赛 / 轻量平台", region: "中国",
+        title: "Booster Robotics", group: "低成本开放生态派", commercialStage: "开发平台扩散", type: "教育竞赛 / 轻量平台", region: "中国",
         summary: "面向教育、竞赛、科研和轻量开发者平台，适合做 Robot API 和算法验证。",
         tags: ["T1", "教育", "竞赛"],
         scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "中", "交付": "中", "商业成果": "中" },
@@ -1308,7 +2305,7 @@
         commercial: "商业成果更接近轻量开发平台销售，重点看学校、赛事、实验室和开发者复购。"
       },
       {
-        title: "EngineAI 众擎", type: "低成本运动人形", region: "中国",
+        title: "EngineAI 众擎", group: "国产具身创业派", commercialStage: "预订 / 小批量", type: "低成本运动人形", region: "中国",
         summary: "低成本和运动能力公开声量高，适合观察硬件成本和开发者扩散。",
         tags: ["低成本", "运动控制", "开发者"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱", "交付": "中", "商业成果": "中" },
@@ -1318,7 +2315,7 @@
         commercial: "商业成果有低成本产品入口和市场声量支撑，但真实出货、售后和复杂场景部署仍需验证。"
       },
       {
-        title: "MagicLab", type: "国产具身创业跟踪", region: "中国",
+        title: "MagicLab", group: "国产具身创业派", commercialStage: "展示 / 观察", type: "国产具身创业跟踪", region: "中国",
         summary: "代表具身智能和人形创业方向，当前适合跟踪产品、供应链和软件平台公开证据。",
         tags: ["跟踪", "具身智能", "人形"],
         scores: { "本体": "中", "AI/VLA": "中", "OS公开": "弱中", "交付": "中", "商业成果": "弱中" },
@@ -1328,7 +2325,7 @@
         commercial: "商业路径、融资和购买咨询入口存在，但客户、订单、收入和批量交付证据仍偏弱。"
       },
       {
-        title: "Noetix Robotics", type: "消费 / 教育轻量人形", region: "中国",
+        title: "Noetix Robotics", group: "低成本开放生态派", commercialStage: "预订 / 小批量", type: "消费 / 教育轻量人形", region: "中国",
         summary: "代表低成本、消费和教育方向人形平台，适合观察硬件普及和开发者生态扩散。",
         tags: ["低成本", "消费", "教育"],
         scores: { "本体": "中", "AI/VLA": "弱中", "OS公开": "弱中", "交付": "中强", "商业成果": "中强" },
@@ -1336,8 +2333,1893 @@
         gov: "不作为政采 OS 主体。",
         evidence: "需要以官方产品页、价格、SDK、订单和交付材料继续核验。",
         commercial: "商业成果集中在低成本消费 / 教育硬件和订单扩散，核心验证点是可靠性、内容生态和售后。"
+      },
+      {
+        title: "自变量 X Square Robot", group: "具身模型先行派", commercialStage: "重点客户试点", type: "泛人形 / 具身大模型", region: "中国",
+        summary: "自研 WALL 系列具身模型，结合量子 1 号、量子 2 号和五指灵巧手，重点进入家庭服务、科研教育、商业清洁和物流分拣等场景。",
+        tags: ["WALL-A", "WALL-OSS", "量子 2 号", "家庭服务"],
+        scores: { "本体": "中强", "AI/VLA": "强", "OS公开": "中", "交付": "中", "商业成果": "中" },
+        findings: ["具身模型和真实家庭数据闭环是核心看点。", "WALL-OSS / wall-x 具备开源生态价值，但不是 L3-L2 操作系统。", "轮式双臂仿人形样本应与传统双足人形分开评价。"],
+        gov: "适合作为国产具身模型和真实场景数据闭环样本，不作为政采 OS 合规主体。",
+        evidence: "官网、量子 2 号页面、wall-x / Hugging Face、世界机器人大会展品页和正式媒体报道支撑产品与模型信号；客户订单、收入和规模交付仍需核验。",
+        commercial: "商业成果按早期真实场景验证评价：融资、采购咨询、58 到家合作和首批家庭入驻计划是商业化信号，但不能写成规模收入或成熟量产。"
       }
     ];
+
+    const companyLayerMatrix = {
+          "Figure AI": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 家庭/工业任务、L12 Helix 行为与任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "extend",
+                      "summary": "运营与机队管理：L13 试点运营",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "extend",
+                      "summary": "应用框架与技能编排：L12 Helix 行为与任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：L11-L8 SDK、ROS/DDS、系统服务边界不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：未公开：L11-L8 SDK、ROS/DDS、系统服务边界不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：L11-L8 SDK、ROS/DDS、系统服务边界不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：L8 SDK、ROS/DDS、系统服务边界不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：L7 数据与制造闭环",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 Helix/VLA、L5 全身控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 全身控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 本体、传感、执行器和制造",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 底座未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 底座未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 本体、传感、执行器和制造",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Tesla Optimus": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 工厂任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "extend",
+                      "summary": "运营与机队管理：L13 Tesla 内部生产运营",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：外部 Robot API、SDK、中间件和系统服务基本不可见。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：外部 Robot API、SDK、中间件和系统服务基本不可见。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：外部 Robot API、SDK、中间件和系统服务基本不可见。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "core",
+                      "summary": "运行基础设施：L7 数据闭环、L6 自动驾驶 AI 迁移、L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "core",
+                      "summary": "AI 与模型运行：L6 自动驾驶 AI 迁移、L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "core",
+                      "summary": "实时控制与安全域：L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 自研本体、执行器、传感与制造",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 交付口径未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 交付口径未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 自研本体、执行器、传感与制造",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Boston Dynamics Atlas": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 工业搬运、装配和移动操作",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：L11-L8 开放接口不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：L8 开放接口不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L5 高动态全身控制；延伸：L6 感知和任务 AI。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 感知和任务 AI",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 高动态全身控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 高性能本体、液电/电驱工程和传感",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 高性能本体、液电/电驱工程和传感",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Agility Robotics": {
+                "L14": {
+                      "status": "core",
+                      "summary": "用户应用与行业任务：L14 仓储和制造搬运",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "core",
+                      "summary": "运营与机队管理：L13 Arc fleet、监控和服务运营",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：L11-L9 Arc 集成、任务和机器人接口",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "extend",
+                      "summary": "通信中间件：L9 Arc 集成、任务和机器人接口",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：延伸：L11-L9 Arc 集成、任务和机器人接口；底层中间件不完整公开。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：L7 现场运行、诊断和服务闭环",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：核心：L7 现场运行、诊断和服务闭环；延伸：L5 步行控制。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 步行控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 Digit 本体和现场支持",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 合规能力未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 合规能力未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 Digit 本体和现场支持",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Apptronik Apollo": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 仓储、制造、物流",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "extend",
+                      "summary": "运营与机队管理：L13 场景运营和安全区域",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：延伸：点选式软件套件和任务配置；L10-L8 中间件细节不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "extend",
+                      "summary": "ROS 工程原语：L10-L8 中间件细节不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "extend",
+                      "summary": "通信中间件：延伸：点选式软件套件和任务配置；L10-L8 中间件细节不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：L8 中间件细节不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：L7 运维、热插拔电池和现场服务",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：核心：L5 控制和安全运行；延伸：L7 运维、热插拔电池和现场服务。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 控制和安全运行",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 Apollo 本体、模块化硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 Apollo 本体、模块化硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Sanctuary AI": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 工业灵巧操作",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "extend",
+                      "summary": "应用框架与技能编排：L12 示教与任务技能",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：通用 API、SDK、ROS/DDS 和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：未公开：通用 API、SDK、ROS/DDS 和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：通用 API、SDK、ROS/DDS 和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：通用 API、SDK、ROS/DDS 和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "core",
+                      "summary": "运行基础设施：核心：L6 embodied AI、L5 灵巧手控制和触觉反馈。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "core",
+                      "summary": "AI 与模型运行：L6 embodied AI、L5 灵巧手控制和触觉反馈",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "core",
+                      "summary": "实时控制与安全域：L5 灵巧手控制和触觉反馈",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 Phoenix 本体、灵巧手和触觉硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 Phoenix 本体、灵巧手和触觉硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "1X NEO": {
+                "L14": {
+                      "status": "core",
+                      "summary": "用户应用与行业任务：L14 家庭任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "core",
+                      "summary": "运营与机队管理：L13 Expert Mode、远程接管和用户运营",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：延伸：家庭权限、远程控制和设备接入；开放 SDK 与中间件不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "extend",
+                      "summary": "通信中间件：延伸：家庭权限、远程控制和设备接入；开放 SDK 与中间件不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：延伸：家庭权限、远程控制和设备接入；开放 SDK 与中间件不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：L7 数据闭环和人工接管",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 Redwood AI",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：核心：L6 Redwood AI；延伸：L7 数据闭环和人工接管。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 NEO 本体、软体安全和 Jetson Thor 计算",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 NEO 本体、软体安全和 Jetson Thor 计算",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Engineered Arts Ameca": {
+                "L14": {
+                      "status": "core",
+                      "summary": "用户应用与行业任务：L14 展陈、接待、教育和社交互动",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "core",
+                      "summary": "运营与机队管理：L13 运营较弱",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：延伸：Tritium 交互运行平台；通用机器人 API 和 ROS 生态较弱。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "extend",
+                      "summary": "ROS 工程原语：延伸：Tritium 交互运行平台；通用机器人 API 和 ROS 生态较弱。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：延伸：Tritium 交互运行平台；通用机器人 API 和 ROS 生态较弱。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "core",
+                      "summary": "运行基础设施：核心：L6 对话、表情和交互 AI；L5 工业控制不是主线。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "core",
+                      "summary": "AI 与模型运行：L6 对话、表情和交互 AI",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "core",
+                      "summary": "实时控制与安全域：L5 工业控制不是主线",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 头面部表情与上身本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 头面部表情与上身本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "NEURA Robotics": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 工业协作、认知机器人和人机协同",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：延伸：工业集成接口；人形开放 API、中间件和 SDK 证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：延伸：工业集成接口；人形开放 API、中间件和 SDK 证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：延伸：工业集成接口；人形开放 API、中间件和 SDK 证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L6 认知机器人能力；延伸：L5 安全协作控制。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 认知机器人能力",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 安全协作控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 协作机器人、传感和安全硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 协作机器人、传感和安全硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "PAL Robotics": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 科研、服务和教育任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "core",
+                      "summary": "Robot API / SDK：L11-L9 ROS 友好接口、SDK 和科研开发环境",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "core",
+                      "summary": "ROS 工程原语：核心：L11-L9 ROS 友好接口、SDK 和科研开发环境。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "core",
+                      "summary": "通信中间件：L9 ROS 友好接口、SDK 和科研开发环境",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "core",
+                      "summary": "机器人系统功能栈：核心：L11-L9 ROS 友好接口、SDK 和科研开发环境。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：延伸：L5 控制、导航、操作栈；AI 泛化不是核心。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：延伸：L5 控制、导航、操作栈；AI 泛化不是核心。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 控制、导航、操作栈",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 TALOS、REEM-C 等平台",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 TALOS、REEM-C 等平台",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Unitree": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 教育、科研、开发者和轻量场景",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：L11 SDK、ROS 2/DDS 友好生态",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "extend",
+                      "summary": "ROS 工程原语：核心：L11 SDK、ROS 2/DDS 友好生态；延伸：开发工具和组件。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "extend",
+                      "summary": "通信中间件：核心：L11 SDK、ROS 2/DDS 友好生态；延伸：开发工具和组件。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：核心：L11 SDK、ROS 2/DDS 友好生态；延伸：开发工具和组件。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L5 运动控制；延伸：L6 感知/算法接入与 OTA。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 感知/算法接入与 OTA",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 运动控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 G1/H1/R1 本体、传感器、执行器和量产供应",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 国产 OS 合规需补",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 国产 OS 合规需补",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 G1/H1/R1 本体、传感器、执行器和量产供应",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "UBTECH": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 工业、教育、商业服务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "extend",
+                      "summary": "运营与机队管理：L13 国内客户和服务运营",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：延伸：ROSA、BrainNet、Co-Agent 应拆入任务、模型和运行平台；开放标准不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "extend",
+                      "summary": "ROS 工程原语：延伸：ROSA、BrainNet、Co-Agent 应拆入任务、模型和运行平台；开放标准不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：延伸：ROSA、BrainNet、Co-Agent 应拆入任务、模型和运行平台；开放标准不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L5 控制和任务执行；延伸：L6 模型协同。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 模型协同",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 控制和任务执行",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 Walker 本体、制造和服务",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 Walker 本体、制造和服务",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Fourier Intelligence": {
+                "L14": {
+                      "status": "core",
+                      "summary": "用户应用与行业任务：L14 康复扩展到通用人形和展示场景",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：开发者 API、中间件和系统服务边界不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：开发者 API、中间件和系统服务边界不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：开发者 API、中间件和系统服务边界不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L5 运动控制；延伸：L6 人形感知与任务智能。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 人形感知与任务智能",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 运动控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 GRx/GR 系列本体、康复执行器和供应链",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 不公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 不公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 GRx/GR 系列本体、康复执行器和供应链",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "AgiBot 智元": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 柔性制造、通用服务和开源机器人",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "extend",
+                      "summary": "运营与机队管理：L13 生态运营",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "core",
+                      "summary": "Robot API / SDK：L11-L9 Link-U、AimRT、LinkCraft 等开发与通信平台",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "core",
+                      "summary": "通信中间件：L9 Link-U、AimRT、LinkCraft 等开发与通信平台",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "core",
+                      "summary": "机器人系统功能栈：核心：L11-L9 Link-U、AimRT、LinkCraft 等开发与通信平台。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：L7 数据、仿真和训练闭环",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 Genie/具身模型、L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 多产品线本体和硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 需与国产 OS 底座组合",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 需与国产 OS 底座组合",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 多产品线本体和硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Xpeng Robotics": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 车企场景和潜在家庭/制造任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：机器人 SDK、API 和中间件开放度不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：机器人 SDK、API 和中间件开放度不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：机器人 SDK、API 和中间件开放度不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：延伸：L6 自动驾驶感知/AI 迁移、L5 控制；数据闭环来自车企体系。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 自动驾驶感知/AI 迁移、L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 车企制造、供应链和人形本体探索",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 车企制造、供应链和人形本体探索",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Xiaomi Robotics": {
+                "L14": {
+                      "status": "core",
+                      "summary": "用户应用与行业任务：L14 家庭生态入口和 IoT 设备联动",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：延伸：手机/IoT 账号、设备接入和家庭控制；机器人 API 需核验。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：延伸：手机/IoT 账号、设备接入和家庭控制；机器人 API 需核验。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：延伸：端侧 AI、感知和家庭交互；L5 人形控制不是当前强证据。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：延伸：端侧 AI、感知和家庭交互；L5 人形控制不是当前强证据。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 人形控制不是当前强证据",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 人形本体证据有限",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "core",
+                      "summary": "OS 发行版与系统服务：L3-L2 手机/IoT OS 生态和硬件供应链",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "core",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 手机/IoT OS 生态和硬件供应链",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 人形本体证据有限",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Galbot 银河通用": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 服务行业和家庭通用任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：开放 API、中间件和开发者生态证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：开放 API、中间件和开发者生态证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：开放 API、中间件和开发者生态证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L6 具身多模态大模型；延伸：L5 操作控制。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 具身多模态大模型",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 操作控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "gap",
+                      "summary": "硬件抽象与驱动：L4-L1 本体与抓取硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 和驱动生态未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 和驱动生态未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "gap",
+                      "summary": "芯片与机器人硬件：L1 本体与抓取硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "RobotEra 星动纪元": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 展示、科研和潜在工业服务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：SDK、中间件和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：SDK、中间件和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：SDK、中间件和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L5 运动控制；延伸：L6 具身智能演示。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 具身智能演示",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 运动控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 STAR1/XBot 等本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 STAR1/XBot 等本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "LimX Dynamics 逐际动力": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 通用人形和多形态任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "core",
+                      "summary": "Robot API / SDK：L11-L8 COSA Agentic OS、机器人应用框架和接口",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "core",
+                      "summary": "机器人系统功能栈：L8 COSA Agentic OS、机器人应用框架和接口",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "core",
+                      "summary": "运行基础设施：核心：L6 FluxVLA、VGM、DreamActor；核心：L5 多形态控制。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "core",
+                      "summary": "AI 与模型运行：L6 FluxVLA、VGM、DreamActor",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "core",
+                      "summary": "实时控制与安全域：L5 多形态控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 Oli/TRON 等本体和运动硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 国产 OS 合规需外接",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 国产 OS 合规需外接",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 Oli/TRON 等本体和运动硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Kepler": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 商业、工业和服务任务",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：Robot API、SDK 和中间件开放证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：Robot API、SDK 和中间件开放证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：Robot API、SDK 和中间件开放证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：延伸：L5 运动控制、L6 任务智能；公开深度有限。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 任务智能",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 运动控制、L6 任务智能",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 Forerunner 本体和硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 Forerunner 本体和硬件",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Leju Robotics": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 教育、科研和开源社区",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：L11 开源接口、ROS/开发文档",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "extend",
+                      "summary": "ROS 工程原语：核心：L11 开源接口、ROS/开发文档；延伸：OpenHarmony 机器人适配。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：核心：L11 开源接口、ROS/开发文档；延伸：OpenHarmony 机器人适配。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：延伸：L5 控制和基础算法；AI 泛化不是核心。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：延伸：L5 控制和基础算法；AI 泛化不是核心。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 控制和基础算法",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "extend",
+                      "summary": "硬件抽象与驱动：L4-L1 Kuavo 本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "extend",
+                      "summary": "OS 发行版与系统服务：L3-L2 OpenHarmony 结合潜力，仍需政采主表逐项达标",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "extend",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OpenHarmony 结合潜力，仍需政采主表逐项达标",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "extend",
+                      "summary": "芯片与机器人硬件：L1 Kuavo 本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Booster Robotics": {
+                "L14": {
+                      "status": "core",
+                      "summary": "用户应用与行业任务：L14 教育、竞赛、科研和算法验证",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "core",
+                      "summary": "Robot API / SDK：L11 开发接口和教学生态",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "core",
+                      "summary": "ROS 工程原语：L10-L8 系统服务较轻",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "core",
+                      "summary": "机器人系统功能栈：L8 系统服务较轻",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L5 轻量运动控制；延伸：L6 算法验证。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 算法验证",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 轻量运动控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 轻量本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 轻量本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "EngineAI 众擎": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 展示、开发者和低成本人形场景",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：SDK、中间件和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：SDK、中间件和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：SDK、中间件和系统服务证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：核心：L5 运动控制；延伸：L6 AI 能力待证。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 AI 能力待证",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 运动控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 低成本本体和执行器路线",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3 OS 底座未公开或不能等同政采 OS。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 内核 / 实时内核边界未公开，需合同和技术材料核验。",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 低成本本体和执行器路线",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "MagicLab": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 具身智能和人形场景跟踪",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：未公开：开发者接口和中间件证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：ROS 工程原语未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：未公开：开发者接口和中间件证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：未公开：开发者接口和中间件证据不足。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：延伸：L6 具身模型、L5 控制；证据深度不足。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 具身模型、L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "gap",
+                      "summary": "硬件抽象与驱动：L4-L1 本体和供应链观察",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS、驱动和交付均需核验",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS、驱动和交付均需核验",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "gap",
+                      "summary": "芯片与机器人硬件：L1 本体和供应链观察",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "Noetix Robotics": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 消费、教育和轻量开发场景",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "gap",
+                      "summary": "应用框架与技能编排：任务编排或技能层未单独披露，需按产品文档继续核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "gap",
+                      "summary": "Robot API / SDK：L11 开发接口需核验",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "gap",
+                      "summary": "ROS 工程原语：L10-L8 公开不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "gap",
+                      "summary": "通信中间件：通信中间件未形成稳定公开证据。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "gap",
+                      "summary": "机器人系统功能栈：L8 公开不足",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：延伸：L5 基础控制；L6 AI 能力较弱。",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 AI 能力较弱",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 基础控制",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 低成本本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 和工业级驱动生态未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 和工业级驱动生态未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 低成本本体",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          },
+          "自变量 X Square Robot": {
+                "L14": {
+                      "status": "extend",
+                      "summary": "用户应用与行业任务：L14 家庭服务、科研教育、商业清洁、物流分拣、长序列精细操作和家庭试点",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L13": {
+                      "status": "gap",
+                      "summary": "运营与机队管理：该层未单独披露，需结合场景运营和交付材料核验。",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L12": {
+                      "status": "extend",
+                      "summary": "应用框架与技能编排：L12 具身任务编排",
+                      "evidence": "应用/运营/技能口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L11": {
+                      "status": "extend",
+                      "summary": "Robot API / SDK：延伸：WALL-OSS / wall-x / Hugging Face 模型开源具备开发生态价值，但不等同 Robot API、ROS/DDS 或 fleet 平台。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L10": {
+                      "status": "extend",
+                      "summary": "ROS 工程原语：延伸：WALL-OSS / wall-x / Hugging Face 模型开源具备开发生态价值，但不等同 Robot API、ROS/DDS 或 fleet 平台。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L9": {
+                      "status": "extend",
+                      "summary": "通信中间件：延伸：WALL-OSS / wall-x / Hugging Face 模型开源具备开发生态价值，但不等同 Robot API、ROS/DDS 或 fleet 平台。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L8": {
+                      "status": "extend",
+                      "summary": "机器人系统功能栈：延伸：WALL-OSS / wall-x / Hugging Face 模型开源具备开发生态价值，但不等同 Robot API、ROS/DDS 或 fleet 平台。",
+                      "evidence": "API/中间件/系统服务口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L7": {
+                      "status": "extend",
+                      "summary": "运行基础设施：L7 数据闭环和真实家庭训练、L5 灵巧操作和力控",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L6": {
+                      "status": "extend",
+                      "summary": "AI 与模型运行：L6 WALL-A / WALL-B / WALL-OSS",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L5": {
+                      "status": "extend",
+                      "summary": "实时控制与安全域：L5 灵巧操作和力控",
+                      "evidence": "运行/AI/实时控制口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L4": {
+                      "status": "core",
+                      "summary": "硬件抽象与驱动：L4-L1 量子 1 号、量子 2 号、五指灵巧手 / ArtiXon Hand",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L3": {
+                      "status": "gap",
+                      "summary": "OS 发行版与系统服务：L3-L2 OS 底座未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L2": {
+                      "status": "gap",
+                      "summary": "内核 / 实时内核 / 虚拟化：L2 OS 底座未公开",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                },
+                "L1": {
+                      "status": "core",
+                      "summary": "芯片与机器人硬件：L1 量子 1 号、量子 2 号、五指灵巧手 / ArtiXon Hand",
+                      "evidence": "驱动/OS/硬件口径来自公司产业栈布局；硬证据以右侧对外窗口为准。"
+                }
+          }
+    };
 
     const stackGroups = [
       ["app", "L14-L12 应用/运营/技能"],
@@ -1496,112 +4378,233 @@
         api: "延伸：L11 开发接口需核验；L10-L8 公开不足。",
         runtime: "延伸：L5 基础控制；L6 AI 能力较弱。",
         base: "核心：L4-L1 低成本本体；缺口：L3-L2 OS 和工业级驱动生态未公开。"
+      },
+      "自变量 X Square Robot": {
+        app: "核心：L14 家庭服务、科研教育、商业清洁、物流分拣、长序列精细操作和家庭试点；延伸：L12 具身任务编排。",
+        api: "延伸：WALL-OSS / wall-x / Hugging Face 模型开源具备开发生态价值，但不等同 Robot API、ROS/DDS 或 fleet 平台。",
+        runtime: "核心：L6 WALL-A / WALL-B / WALL-OSS；延伸：L7 数据闭环和真实家庭训练、L5 灵巧操作和力控。",
+        base: "核心：L4-L1 量子 1 号、量子 2 号、五指灵巧手 / ArtiXon Hand；缺口：L3-L2 OS 底座未公开。"
       }
+    };
+
+    const companyWindows = {
+      "Figure AI": [
+        { label: "官网 / News", href: "https://www.figure.ai/", type: "官网", note: "Figure 官网与新闻页面是主窗口；LinkedIn、X、YouTube 官方账号继续核验。" },
+        { label: "开发者 / 模型窗口", href: "https://www.figure.ai/news/helix-02", type: "模型", note: "Helix、BotQ、Figure 03、客户试点与产线信号。" },
+        { label: "商业窗口", href: "https://www.figure.ai/news", type: "商业证据", note: "重点客户试点、自有量产爬坡和家庭任务数据闭环。" }
+      ],
+      "Tesla Optimus": [
+        { label: "Tesla AI", href: "https://www.tesla.com/AI", type: "官网", note: "Tesla AI 与官方发布是主要窗口；X / YouTube / 财报继续核验。" },
+        { label: "商业窗口", href: "https://www.tesla.com/AI", type: "商业证据", note: "Optimus 内部验证、产线规划和资本开支口径。" }
+      ],
+      "Boston Dynamics Atlas": [
+        { label: "Atlas / Orbit", href: "https://bostondynamics.com/products/atlas/", type: "官网", note: "Atlas 产品页和 Orbit 运营产品页是主窗口。" },
+        { label: "商业窗口", href: "https://bostondynamics.com/products/orbit/", type: "商业证据", note: "Spot / Stretch / Orbit 商业基础，Atlas 企业客户仍待证。" }
+      ],
+      "Agility Robotics": [
+        { label: "Digit / Arc", href: "https://agilityrobotics.com/products/digit", type: "官网", note: "Digit 和 Arc 是主窗口；Newsroom、LinkedIn、YouTube 继续核验。" },
+        { label: "商业窗口", href: "https://www.agilityrobotics.com/solution/arc", type: "商业证据", note: "GXO、Toyota、Mercado Libre、Schaeffler 等合作和机队部署信号。" }
+      ],
+      "Apptronik Apollo": [
+        { label: "Apollo", href: "https://apptronik.com/apollo", type: "官网", note: "官网和产品页为主，LinkedIn、YouTube 和新闻页继续核验。" },
+        { label: "商业窗口", href: "https://apptronik.com/apollo", type: "商业证据", note: "Mercedes-Benz、Jabil 等制造场景合作信号。" }
+      ],
+      "Sanctuary AI": [
+        { label: "官网 / Technology", href: "https://www.sanctuary.ai/technology", type: "官网", note: "官网、Technology 页和 News 是主窗口。" },
+        { label: "商业窗口", href: "https://www.sanctuary.ai/technology", type: "商业证据", note: "工业客户试点和早期部署报道。" }
+      ],
+      "1X NEO": [
+        { label: "NEO / News", href: "https://www.1x.tech/neo", type: "官网", note: "官网、News / Blog、LinkedIn、X、YouTube 是主要窗口。" },
+        { label: "商业窗口", href: "https://www.1x.tech/neo", type: "商业证据", note: "预订、家庭服务、Expert Mode 和 2026 交付准备。" }
+      ],
+      "Engineered Arts Ameca": [
+        { label: "Engineered Arts", href: "https://engineeredarts.com/", type: "官网", note: "官网、产品页、YouTube 和 LinkedIn 是主窗口。" },
+        { label: "商业窗口", href: "https://engineeredarts.com/", type: "商业证据", note: "展陈、租赁、接待和社交机器人销售窗口。" }
+      ],
+      "NEURA Robotics": [
+        { label: "NEURA Robotics", href: "https://neura-robotics.com/", type: "官网", note: "官网、产品页、新闻页、LinkedIn、YouTube 是主要窗口。" },
+        { label: "商业窗口", href: "https://neura-robotics.com/", type: "商业证据", note: "认知机器人、协作机器人和人形路线商业窗口。" }
+      ],
+      "PAL Robotics": [
+        { label: "TALOS / PAL", href: "https://pal-robotics.com/robots/talos/", type: "官网", note: "官网、产品页、文档、LinkedIn、YouTube、GitHub 待持续核验。" },
+        { label: "商业窗口", href: "https://pal-robotics.com/robots/talos/", type: "商业证据", note: "高校、科研机构和服务机器人采购。" }
+      ],
+      "Unitree": [
+        { label: "G1 / Developer", href: "https://support.unitree.com/home/en/developer", type: "开发者", note: "官网、G1 页面、Developer 支持、GitHub、微信公众号、B站 / YouTube。" },
+        { label: "商业窗口", href: "https://www.unitree.com/en/g1", type: "商业证据", note: "可购买 SKU、开发者生态、教育科研和轻量商业销售。" }
+      ],
+      "UBTECH": [
+        { label: "官网 / Walker S2", href: "https://www.ubtrobot.com/en", type: "官网", note: "官网、Walker S2、港交所公告、公众号、视频号和客户案例。" },
+        { label: "商业窗口", href: "https://www.ubtrobot.com/cn/humanoid/products/walker-s2", type: "商业证据", note: "上市公司收入基础、服务网络和 Walker 量产交付信号。" }
+      ],
+      "Fourier Intelligence": [
+        { label: "GR-2 / 文档", href: "https://support.fftai.com/en/docs/GR-X-Humanoid-Robot/GR2/GR-2_Introduction/", type: "开发者", note: "产品页、文档、公众号、LinkedIn、YouTube 和康复业务窗口。" },
+        { label: "商业窗口", href: "https://www.fftai.com/products/gr-2", type: "商业证据", note: "康复机器人商业基础，人形通用化仍需拆分。" }
+      ],
+      "AgiBot 智元": [
+        { label: "官网 / A2 Ultra / Link-U", href: "https://www.agibot.com/", type: "官网", note: "官网、A2 Ultra、Link-U、GitHub / Gitee、公众号、视频号和开发生态窗口。" },
+        { label: "商业窗口", href: "https://www.agibot.com/products/A2_Ultra", type: "商业证据", note: "多产品线、量产下线口径、行业客户和开源生态。" }
+      ],
+      "Xpeng Robotics": [
+        { label: "Physical AI / IRON", href: "https://www.xpeng.com/news/019a56f54fe99a2a0a8d8a0282e402b7", type: "官网", note: "官方新闻、公司公众号、X、YouTube 和汽车体系窗口。" },
+        { label: "商业窗口", href: "https://www.xpeng.com/news/019a56f54fe99a2a0a8d8a0282e402b7", type: "商业证据", note: "车企制造资源强，人形独立收入和客户待证。" }
+      ],
+      "Xiaomi Robotics": [
+        { label: "Xiaomi Robotics", href: "https://robotics.xiaomi.com/", type: "官网", note: "官网、公司公众号、微博、GitHub 和生态窗口。" },
+        { label: "商业窗口", href: "https://robotics.xiaomi.com/", type: "商业证据", note: "集团生态强，人形 SKU、客户和收入证据弱。" }
+      ],
+      "Galbot 银河通用": [
+        { label: "Galbot 官网", href: "https://www.galbot.com/", type: "官网", note: "官网、公众号、视频号和开发 / 场景介绍窗口。" },
+        { label: "商业窗口", href: "https://www.galbot.com/", type: "商业证据", note: "零售、药店、家庭和行业服务场景信号。" }
+      ],
+      "RobotEra 星动纪元": [
+        { label: "RobotEra 官网", href: "https://www.robotera.com/en/", type: "官网", note: "官网、公众号、GitHub 和视频号窗口继续核验。" },
+        { label: "商业窗口", href: "https://www.robotera.com/en/", type: "商业证据", note: "产品展示、融资和早期项目验证。" }
+      ],
+      "LimX Dynamics 逐际动力": [
+        { label: "官网 / TRON 1", href: "https://www.limxdynamics.com/en/products/tron1", type: "官网", note: "官网、TRON 1、公众号、GitHub、YouTube 和开发者文档。" },
+        { label: "商业窗口", href: "https://www.limxdynamics.com/en/products/tron1", type: "商业证据", note: "TRON 开发平台、Oli 预订和融资信号。" }
+      ],
+      "Kepler": [
+        { label: "Forerunner K2", href: "https://www.gotokepler.com/productDetailK2?id=2", type: "产品", note: "官网、产品页、公众号、视频号和 LinkedIn 待核验。" },
+        { label: "商业窗口", href: "https://www.gotokepler.com/productDetailK2?id=2", type: "商业证据", note: "早期小批量交付和客户验收需核验。" }
+      ],
+      "Leju Robotics": [
+        { label: "Leju 官网", href: "https://www.lejurobot.com/en", type: "官网", note: "官网、公众号、开源仓库和 OpenHarmony 生态入口。" },
+        { label: "商业窗口", href: "https://www.lejurobot.com/en", type: "商业证据", note: "教育科研、竞赛、开源和国产 OS 适配验证。" }
+      ],
+      "Booster Robotics": [
+        { label: "Booster Robotics", href: "https://www.booster.tech/", type: "官网", note: "官网、文档、GitHub、公众号和开发者入口待核验。" },
+        { label: "商业窗口", href: "https://www.booster.tech/", type: "商业证据", note: "教育、竞赛、实验室和开发者销售。" }
+      ],
+      "EngineAI 众擎": [
+        { label: "EngineAI 官网", href: "https://www.engineai.com.cn/", type: "官网", note: "官网、公众号、抖音、B站、视频号和产品介绍窗口。" },
+        { label: "商业窗口", href: "https://www.engineai.com.cn/", type: "商业证据", note: "低成本 SKU、开发者销售和真实出货待核验。" }
+      ],
+      "MagicLab": [
+        { label: "MagicLab 魔法原子", href: "https://www.magiclab.top/", type: "官网", note: "官网、公众号、视频号和融资窗口待持续核验。" },
+        { label: "商业窗口", href: "https://www.magiclab.top/", type: "商业证据", note: "融资、购买咨询和客户订单仍偏弱。" }
+      ],
+      "Noetix Robotics": [
+        { label: "Noetix / 松延动力", href: "https://www.noetixrobotics.com/", type: "官网", note: "官网、公众号、电商和视频号窗口继续核验。" },
+        { label: "商业窗口", href: "https://www.noetixrobotics.com/", type: "商业证据", note: "消费 / 教育低成本订单扩散，售后和可靠性需验证。" }
+      ],
+      "自变量 X Square Robot": [
+        { label: "官网 / wall-x / Hugging Face", href: "https://www.x2robot.com/", type: "官网", note: "官网、wall-x、Hugging Face、公众号、媒体和家庭服务窗口。" },
+        { label: "商业窗口", href: "https://www.x2robot.com/", type: "商业证据", note: "58 到家合作、家庭试点、融资和采购咨询信号。" }
+      ]
     };
 
     const evidenceSources = {
       "Figure AI": [
-        { label: "Figure Helix 02", href: "https://www.figure.ai/news/helix-02", note: "支撑 Helix / VLA 与本体控制布局；未公开通用 OS 或 SDK 边界。" },
-        { label: "Figure 官网", href: "https://www.figure.ai/", note: "支撑 Figure 人形本体、公司产品路线和任务叙事。" }
+        { label: "Figure Helix 02", href: "https://www.figure.ai/news/helix-02", type: "模型", note: "支撑 Helix / VLA 与本体控制布局；未公开通用 OS 或 SDK 边界。" },
+        { label: "Figure 官网", href: "https://www.figure.ai/", type: "产品", note: "支撑 Figure 人形本体、公司产品路线和任务叙事。" }
       ],
       "Tesla Optimus": [
-        { label: "Tesla AI & Robotics", href: "https://www.tesla.com/AI", note: "支撑 Optimus 与 Tesla AI / 制造体系关联；外部 SDK 与 OS 未公开。" }
+        { label: "Tesla AI & Robotics", href: "https://www.tesla.com/AI", type: "官网", note: "支撑 Optimus 与 Tesla AI / 制造体系关联；外部 SDK 与 OS 未公开。" }
       ],
       "Boston Dynamics Atlas": [
-        { label: "Boston Dynamics Atlas", href: "https://bostondynamics.com/products/atlas/", note: "支撑 Atlas 工业人形、本体和运动控制方向。" },
-        { label: "Boston Dynamics Orbit", href: "https://bostondynamics.com/products/orbit/", note: "支撑企业运维 / fleet / 运营层参考，不能直接外推到 Atlas OS。" }
+        { label: "Boston Dynamics Atlas", href: "https://bostondynamics.com/products/atlas/", type: "产品", note: "支撑 Atlas 工业人形、本体和运动控制方向。" },
+        { label: "Boston Dynamics Orbit", href: "https://bostondynamics.com/products/orbit/", type: "产品", note: "支撑企业运维 / fleet / 运营层参考，不能直接外推到 Atlas OS。" }
       ],
       "Agility Robotics": [
-        { label: "Agility Digit", href: "https://agilityrobotics.com/products/digit", note: "支撑 Digit 本体与仓储/制造场景。" },
-        { label: "Agility Arc", href: "https://www.agilityrobotics.com/solution/arc", note: "支撑 fleet、任务和现场运营层布局。" }
+        { label: "Agility Digit", href: "https://agilityrobotics.com/products/digit", type: "产品", note: "支撑 Digit 本体与仓储/制造场景。" },
+        { label: "Agility Arc", href: "https://www.agilityrobotics.com/solution/arc", type: "官网", note: "支撑 fleet、任务和现场运营层布局。" }
       ],
       "Apptronik Apollo": [
-        { label: "Apptronik Apollo", href: "https://apptronik.com/apollo", note: "支撑 Apollo 工业场景、模块化、安全和软件操作面。" }
+        { label: "Apptronik Apollo", href: "https://apptronik.com/apollo", type: "产品", note: "支撑 Apollo 工业场景、模块化、安全和软件操作面。" }
       ],
       "Sanctuary AI": [
-        { label: "Sanctuary Technology", href: "https://www.sanctuary.ai/technology", note: "支撑 Carbon AI、触觉、灵巧操作和工业级人形方向。" }
+        { label: "Sanctuary Technology", href: "https://www.sanctuary.ai/technology", type: "模型", note: "支撑 Carbon AI、触觉、灵巧操作和工业级人形方向。" }
       ],
       "1X NEO": [
-        { label: "1X NEO", href: "https://www.1x.tech/neo", note: "支撑 NEO 家庭、Redwood AI、Expert Mode、硬件和隐私边界。" }
+        { label: "1X NEO", href: "https://www.1x.tech/neo", type: "产品", note: "支撑 NEO 家庭、Redwood AI、Expert Mode、硬件和隐私边界。" }
       ],
       "Engineered Arts Ameca": [
-        { label: "Engineered Arts", href: "https://engineeredarts.com/", note: "支撑 Ameca / 社交交互机器人方向；Tritium 属交互运行平台，不按政采 OS 处理。" }
+        { label: "Engineered Arts", href: "https://engineeredarts.com/", type: "官网", note: "支撑 Ameca / 社交交互机器人方向；Tritium 属交互运行平台，不按政采 OS 处理。" }
       ],
       "NEURA Robotics": [
-        { label: "NEURA Robotics", href: "https://neura-robotics.com/", note: "支撑认知机器人、工业协作和 4NE-1 路线；人形 OS/SDK 仍需进一步核验。" }
+        { label: "NEURA Robotics", href: "https://neura-robotics.com/", type: "官网", note: "支撑认知机器人、工业协作和 4NE-1 路线；人形 OS/SDK 仍需进一步核验。" }
       ],
       "PAL Robotics": [
-        { label: "PAL Robotics TALOS", href: "https://pal-robotics.com/robots/talos/", note: "支撑科研人形和 ROS 生态价值；商业人形 OS 能力有限。" }
+        { label: "PAL Robotics TALOS", href: "https://pal-robotics.com/robots/talos/", type: "商业证据", note: "支撑科研人形和 ROS 生态价值；商业人形 OS 能力有限。" }
       ],
       "Unitree": [
-        { label: "Unitree G1", href: "https://www.unitree.com/en/g1", note: "支撑 G1 参数、价格、传感器、开发者生态和量产可得性。" },
-        { label: "Unitree Developer", href: "https://support.unitree.com/home/en/developer", note: "支撑 SDK / 二次开发方向，具体授权需按 SKU 和合同核验。" }
+        { label: "Unitree G1", href: "https://www.unitree.com/en/g1", type: "商业证据", note: "支撑 G1 参数、价格、传感器、开发者生态和量产可得性。" },
+        { label: "Unitree Developer", href: "https://support.unitree.com/home/en/developer", type: "开发者", note: "支撑 SDK / 二次开发方向，具体授权需按 SKU 和合同核验。" }
       ],
       "UBTECH": [
-        { label: "UBTECH Walker S2", href: "https://www.ubtrobot.com/cn/humanoid/products/walker-s2", note: "支撑 Walker S2 工业人形和自主换电叙事；OS/中间件边界需合同核验。" },
-        { label: "UBTECH 官网", href: "https://www.ubtrobot.com/en", note: "支撑公司机器人产品线与服务布局。" }
+        { label: "UBTECH Walker S2", href: "https://www.ubtrobot.com/cn/humanoid/products/walker-s2", type: "产品", note: "支撑 Walker S2 工业人形和自主换电叙事；OS/中间件边界需合同核验。" },
+        { label: "UBTECH 官网", href: "https://www.ubtrobot.com/en", type: "产品", note: "支撑公司机器人产品线与服务布局。" }
       ],
       "Fourier Intelligence": [
-        { label: "Fourier GR-2 文档", href: "https://support.fftai.com/en/docs/GR-X-Humanoid-Robot/GR2/GR-2_Introduction/", note: "支撑 GR-2 本体、开发文档和科研平台属性。" }
+        { label: "Fourier GR-2 文档", href: "https://support.fftai.com/en/docs/GR-X-Humanoid-Robot/GR2/GR-2_Introduction/", type: "产品", note: "支撑 GR-2 本体、开发文档和科研平台属性。" }
       ],
       "AgiBot 智元": [
-        { label: "AgiBot A2 Ultra", href: "https://www.agibot.com/products/A2_Ultra", note: "支撑 A2 Ultra 产品线和全尺寸人形路线。" },
-        { label: "AgiBot Link-U OS", href: "https://www.agibot.com/filepage/282.html", note: "支撑 Link-U / 运行平台公开命名；仍需拆分为机器人运行时而非政采 OS。" }
+        { label: "AgiBot A2 Ultra", href: "https://www.agibot.com/products/A2_Ultra", type: "产品", note: "支撑 A2 Ultra 产品线和全尺寸人形路线。" },
+        { label: "AgiBot Link-U OS", href: "https://www.agibot.com/filepage/282.html", type: "官网", note: "支撑 Link-U / 运行平台公开命名；仍需拆分为机器人运行时而非政采 OS。" }
       ],
       "Xpeng Robotics": [
-        { label: "XPENG Physical AI / IRON", href: "https://www.xpeng.com/news/019a56f54fe99a2a0a8d8a0282e402b7", note: "支撑 IRON、Physical AI、车企制造和 AI 迁移路线；SDK/OS 未公开。" }
+        { label: "XPENG Physical AI / IRON", href: "https://www.xpeng.com/news/019a56f54fe99a2a0a8d8a0282e402b7", type: "新闻", note: "支撑 IRON、Physical AI、车企制造和 AI 迁移路线；SDK/OS 未公开。" }
       ],
       "Xiaomi Robotics": [
-        { label: "Xiaomi Robotics", href: "https://robotics.xiaomi.com/", note: "支撑小米机器人研发入口；人形机器人持续产品化和交付证据较弱。" }
+        { label: "Xiaomi Robotics", href: "https://robotics.xiaomi.com/", type: "产品", note: "支撑小米机器人研发入口；人形机器人持续产品化和交付证据较弱。" }
       ],
       "Galbot 银河通用": [
-        { label: "Galbot 官网", href: "https://www.galbot.com/", note: "支撑具身多模态和通用机器人定位；OS、SDK、交付规模需继续核验。" }
+        { label: "Galbot 官网", href: "https://www.galbot.com/", type: "官网", note: "支撑具身多模态和通用机器人定位；OS、SDK、交付规模需继续核验。" }
       ],
       "RobotEra 星动纪元": [
-        { label: "RobotEra 官网", href: "https://www.robotera.com/en/", note: "支撑 STAR / XBot / 具身智能方向；OS/API 和量产交付证据不足。" }
+        { label: "RobotEra 官网", href: "https://www.robotera.com/en/", type: "商业证据", note: "支撑 STAR / XBot / 具身智能方向；OS/API 和量产交付证据不足。" }
       ],
       "LimX Dynamics 逐际动力": [
-        { label: "LimX TRON 1", href: "https://www.limxdynamics.com/en/products/tron1", note: "支撑 TRON 1 科研平台、SDK、仿真和开发者路线。" },
-        { label: "LimX 官网", href: "https://www.limxdynamics.com/en", note: "支撑 Oli、COSA、FluxVLA 等产品与运行平台公开口径。" }
+        { label: "LimX TRON 1", href: "https://www.limxdynamics.com/en/products/tron1", type: "产品", note: "支撑 TRON 1 科研平台、SDK、仿真和开发者路线。" },
+        { label: "LimX 官网", href: "https://www.limxdynamics.com/en", type: "产品", note: "支撑 Oli、COSA、FluxVLA 等产品与运行平台公开口径。" }
       ],
       "Kepler": [
-        { label: "Kepler Forerunner K2", href: "https://www.gotokepler.com/productDetailK2?id=2", note: "支撑 Forerunner K2 官方入口；页面依赖 JS，OS/API 和交付细节仍需供应商资料核验。" }
+        { label: "Kepler Forerunner K2", href: "https://www.gotokepler.com/productDetailK2?id=2", type: "产品", note: "支撑 Forerunner K2 官方入口；页面依赖 JS，OS/API 和交付细节仍需供应商资料核验。" }
       ],
       "Leju Robotics": [
-        { label: "Leju 官网", href: "https://www.lejurobot.com/en", note: "支撑 Kuavo、开源人形平台和教育科研场景。" }
+        { label: "Leju 官网", href: "https://www.lejurobot.com/en", type: "官网", note: "支撑 Kuavo、开源人形平台和教育科研场景。" }
       ],
       "Booster Robotics": [
-        { label: "Booster Robotics", href: "https://www.booster.tech/", note: "支撑教育、竞赛、开发者平台定位；工业 OS 能力不是主线。" }
+        { label: "Booster Robotics", href: "https://www.booster.tech/", type: "官网", note: "支撑教育、竞赛、开发者平台定位；工业 OS 能力不是主线。" }
       ],
       "EngineAI 众擎": [
-        { label: "EngineAI 众擎", href: "https://www.engineai.com.cn/", note: "支撑低成本运动人形和产品入口；OS/中间件与交付服务需核验。" }
+        { label: "EngineAI 众擎", href: "https://www.engineai.com.cn/", type: "产品", note: "支撑低成本运动人形和产品入口；OS/中间件与交付服务需核验。" }
       ],
       "MagicLab": [
-        { label: "MagicLab 魔法原子", href: "https://www.magiclab.top/", note: "支撑国产具身创业样本；公开证据深度不足，暂作观察对象。" }
+        { label: "MagicLab 魔法原子", href: "https://www.magiclab.top/", type: "官网", note: "支撑国产具身创业样本；公开证据深度不足，暂作观察对象。" }
       ],
       "Noetix Robotics": [
-        { label: "Noetix Robotics / 松延动力", href: "https://www.noetixrobotics.com/", note: "支撑消费/教育轻量人形入口；工业级 OS 和中间件证据不足。" }
+        { label: "Noetix Robotics / 松延动力", href: "https://www.noetixrobotics.com/", type: "官网", note: "支撑消费/教育轻量人形入口；工业级 OS 和中间件证据不足。" }
+      ],
+      "自变量 X Square Robot": [
+        { label: "自变量机器人官网", href: "https://www.x2robot.com/", type: "商业证据", note: "支撑 WALL-A、量子系列、五指灵巧手、多场景方案和商业合作入口。" },
+        { label: "X-Square Robot wall-x", href: "https://github.com/X-Square-Robot/wall-x", type: "模型", note: "支撑 WALL-OSS / 开源模型和训练推理代码；不等同通用 OS 或 ROS/DDS 中间件。" },
+        { label: "Hugging Face x-square-robot", href: "https://huggingface.co/x-square-robot", type: "模型", note: "支撑开源模型生态和开发者可获得性。" },
+        { label: "世界机器人大会展品信息", href: "https://www.worldrobotconference.com/cn/exhibition/show/69", type: "模型", note: "支撑量子 2 号、WALL-A、轮式双臂和家庭 / 精细操作任务信号。" },
+        { label: "每日经济新闻报道", href: "https://www.nbd.com.cn/articles/2026-04-22/4352789.html", type: "商业证据", note: "支撑 WALL-B、家庭服务试点和 58 到家合作信号；规模收入仍需核验。" }
       ],
       "ROS 2": [
-        { label: "ROS 2 Distributions", href: "https://docs.ros.org/en/rolling/Releases.html", note: "支撑 ROS 2 发行版、生命周期和版本判断。" },
-        { label: "ROS 2 on DDS", href: "https://design.ros2.org/articles/ros_on_dds.html", note: "支撑 DDS/RMW 中间件定位。" }
+        { label: "ROS 2 Distributions", href: "https://docs.ros.org/en/rolling/Releases.html", type: "开发者", note: "支撑 ROS 2 发行版、生命周期和版本判断。" },
+        { label: "ROS 2 on DDS", href: "https://design.ros2.org/articles/ros_on_dds.html", type: "开发者", note: "支撑 DDS/RMW 中间件定位。" }
       ],
       "Ubuntu + ROS 2": [
-        { label: "ROS REP-2000", href: "https://www.ros.org/reps/rep-2000.html", note: "支撑 ROS 2 目标平台和 Ubuntu 基线判断。" }
+        { label: "ROS REP-2000", href: "https://www.ros.org/reps/rep-2000.html", type: "开发者", note: "支撑 ROS 2 目标平台和 Ubuntu 基线判断。" }
       ],
       "Isaac ROS / Jetson": [
-        { label: "NVIDIA Isaac ROS", href: "https://developer.nvidia.com/isaac/ros", note: "支撑 Isaac ROS AI 加速和 Jetson 路线。" }
+        { label: "NVIDIA Isaac ROS", href: "https://developer.nvidia.com/isaac/ros", type: "开发者", note: "支撑 Isaac ROS AI 加速和 Jetson 路线。" }
       ],
       "Open-RMF": [
-        { label: "Open-RMF / ROS 2 多机器人", href: "https://osrf.github.io/ros2multirobotbook/", note: "支撑多机器人 fleet 和场地运营层定位。" }
+        { label: "Open-RMF / ROS 2 多机器人", href: "https://osrf.github.io/ros2multirobotbook/", type: "开发者", note: "支撑多机器人 fleet 和场地运营层定位。" }
       ],
       "MoveIt / Nav2 / ros2_control": [
-        { label: "MoveIt", href: "https://moveit.ai/", note: "支撑运动规划能力包。" },
-        { label: "Nav2", href: "https://docs.nav2.org/", note: "支撑导航和行为树能力包。" }
+        { label: "MoveIt", href: "https://moveit.ai/", type: "开发者", note: "支撑运动规划能力包。" },
+        { label: "Nav2", href: "https://docs.nav2.org/", type: "开发者", note: "支撑导航和行为树能力包。" }
       ],
       "OpenHarmony / 国产 Linux + ROS 2": [
-        { label: "OpenHarmony", href: "https://www.openharmony.cn/", note: "支撑 OpenHarmony 候选底座方向；政采主表达标需逐项补证。" },
-        { label: "openEuler", href: "https://www.openeuler.org/en/", note: "支撑国产 Linux + ROS 2 主控验证方向。" }
+        { label: "OpenHarmony", href: "https://www.openharmony.cn/", type: "开发者", note: "支撑 OpenHarmony 候选底座方向；政采主表达标需逐项补证。" },
+        { label: "openEuler", href: "https://www.openeuler.org/en/", type: "开发者", note: "支撑国产 Linux + ROS 2 主控验证方向。" }
       ]
     };
 
@@ -1683,7 +4686,10 @@
 
     const themeColors = ["#2458a6", "#1d7c74", "#6f4aa3", "#a45f13", "#4c7a2b", "#b33b32"];
 
-    const state = { view: "companies", selected: companies[0], selectedLayer: "L1" };
+    const groupFilters = ["全部公司", "工业 / 仓储部署派", "通用人形 / VLA 派", "家庭服务派", "低成本开放生态派", "汽车 / 制造生态派", "国产具身创业派", "具身模型先行派"];
+    const stageFilters = ["全部阶段", "规模交付", "重点客户试点", "预订 / 小批量", "开发平台扩散", "展示 / 观察"];
+    const state = { view: "companies", selected: companies[0], selectedLayer: "L1", selectedGroup: "全部公司", selectedStage: "全部阶段", compactPinned: false };
+    let masonryRaf = 0;
 
     const radarAxes = [
       { key: "本体", label: "本体" },
@@ -1821,14 +4827,76 @@
       return grid;
     }
 
+    const statusLabels = { core: "核心覆盖", extend: "延伸覆盖", gap: "缺口/未公开" };
+    const layerBandDefs = [
+      { id: "app", title: "L14-L12 应用 / 运营 / 技能", layers: ["L14", "L13", "L12"] },
+      { id: "api", title: "L11-L8 API / 中间件 / 系统服务", layers: ["L11", "L10", "L9", "L8"] },
+      { id: "runtime", title: "L7-L5 运行 / AI / 实时控制", layers: ["L7", "L6", "L5"] },
+      { id: "base", title: "L4-L1 驱动 / OS / 硬件", layers: ["L4", "L3", "L2", "L1"] }
+    ];
+    const logoDomainOverrides = {
+      "Fourier Intelligence": "fftai.com",
+      "Xiaomi Robotics": "xiaomi.com"
+    };
+
+    function layerCompanyData(layerId = state.selectedLayer, item = state.selected) {
+      return companyLayerMatrix[item?.title]?.[layerId] || { status: "gap", summary: "该公司在该层暂无稳定公开证据。", evidence: "按对外窗口继续核验。" };
+    }
+
+    function statusChip(status) {
+      return el("span", "layer-status-chip " + status, statusLabels[status] || status);
+    }
+
+    function companyInitials(title = "") {
+      const letters = (title.match(/[A-Za-z]/g) || []).slice(0, 2).join("").toUpperCase();
+      if (letters) return letters;
+      const chars = Array.from(title.replace(/[\s/]+/g, "")).filter(char => /[\u4e00-\u9fffA-Za-z0-9]/.test(char));
+      return chars.slice(0, 2).join("") || "R";
+    }
+
+    function renderCompanyLogo(item) {
+      const slot = el("div", "company-logo");
+      const initials = companyInitials(item.title);
+      const hue = themeFor(item);
+      slot.innerHTML = `
+        <svg viewBox="0 0 40 40" role="img" aria-label="${item.title} logo">
+          <defs>
+            <linearGradient id="g-${initials}-${Math.abs(item.title.length)}" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="${hue}"></stop>
+              <stop offset="100%" stop-color="#17202a"></stop>
+            </linearGradient>
+          </defs>
+          <rect x="0.5" y="0.5" width="39" height="39" rx="10" fill="url(#g-${initials}-${Math.abs(item.title.length)})"></rect>
+          <circle cx="12" cy="12" r="5" class="company-logo-subtle"></circle>
+          <circle cx="28" cy="28" r="8" class="company-logo-subtle"></circle>
+          <text x="20" y="21" class="company-logo-fg">${initials}</text>
+        </svg>`;
+      return slot;
+    }
+
+    function bandCounts(item, band) {
+      return band.layers.reduce((acc, layerId) => {
+        const status = layerCompanyData(layerId, item).status || "gap";
+        acc[status] += 1;
+        return acc;
+      }, { core: 0, extend: 0, gap: 0 });
+    }
+
     function buildLayerDetail(layerId = state.selectedLayer) {
       const root = el("div", "layer-detail");
       root.dataset.zone = layerZone(layerId);
       const item = layerInfo(layerId);
       if (!item) return root;
+      const companyLayer = layerCompanyData(layerId);
+      const statusRow = el("div", "layer-status-row");
+      statusRow.appendChild(statusChip(companyLayer.status));
+      statusRow.appendChild(el("b", "", state.selected.title + " · " + item.id + " " + item.title));
+      root.appendChild(statusRow);
+      root.appendChild(el("p", "company-layer-note", companyLayer.summary));
+      if (companyLayer.evidence) root.appendChild(el("p", "company-layer-note", "证据边界：" + companyLayer.evidence));
       const cols = el("div", "route-columns");
       const route = el("div");
-      route.appendChild(el("b", "", "技术路线"));
+      route.appendChild(el("b", "", "该层通用技术路线"));
       route.appendChild(el("p", "", item.routes));
       const flags = el("div");
       flags.appendChild(el("b", "", "标志性方案"));
@@ -1850,52 +4918,242 @@
     function renderLayers() {
       const root = document.getElementById("layerStack");
       root.innerHTML = "";
-      layers.forEach(([idx, title, note, zone]) => {
-        const card = el("button", idx === state.selectedLayer ? "layer active" : "layer");
-        card.type = "button";
-        card.dataset.zone = zone;
-        card.dataset.layer = idx;
-        card.appendChild(el("div", "layer-index", idx));
-        const body = el("div");
-        body.appendChild(el("h3", "", title));
-        body.appendChild(el("p", "", note));
-        card.appendChild(body);
-        card.addEventListener("click", () => {
-          state.selectedLayer = idx;
-          renderLayers();
+      const note = document.getElementById("layerPanelNote");
+      if (note && state.selected) note.textContent = state.selected.title + " 的 L14-L1 技术栈联动。点击层级查看公司布局、证据边界和该层通用技术路线。";
+      layerBandDefs.forEach(band => {
+        const section = document.createElement("details");
+        section.className = "layer-band";
+        if (band.layers.includes(state.selectedLayer)) section.open = true;
+        const summary = document.createElement("summary");
+        summary.className = "layer-band-header";
+        const counts = bandCounts(state.selected, band);
+        const header = el("div", "layer-status-row");
+        header.appendChild(el("h3", "", band.title));
+        header.appendChild(statusChip("core"));
+        header.lastChild.textContent = `核心 ${counts.core}`;
+        header.appendChild(statusChip("extend"));
+        header.lastChild.textContent = `延伸 ${counts.extend}`;
+        header.appendChild(statusChip("gap"));
+        header.lastChild.textContent = `缺口 ${counts.gap}`;
+        summary.appendChild(header);
+        summary.appendChild(el("p", "", "按选中公司显示该段层级摘要，展开后可逐层查看。"));
+        section.appendChild(summary);
+        const grid = el("div", "layer-band-grid");
+        band.layers.forEach(layerId => {
+          const layer = layerInfo(layerId);
+          const data = layerCompanyData(layerId);
+          const row = el("button", layerId === state.selectedLayer ? "layer-mini active" : "layer-mini");
+          row.type = "button";
+          row.dataset.zone = layerZone(layerId);
+          const top = el("div", "layer-status-row");
+          top.appendChild(el("b", "", `${layerId} ${layer.title}`));
+          top.appendChild(statusChip(data.status));
+          row.appendChild(top);
+          row.appendChild(el("p", "", data.summary));
+          row.addEventListener("click", () => {
+            state.selectedLayer = layerId;
+            renderLayers();
+          });
+          grid.appendChild(row);
+          if (layerId === state.selectedLayer) grid.appendChild(buildLayerDetail(layerId));
         });
-        root.appendChild(card);
-        if (idx === state.selectedLayer) {
-          root.appendChild(buildLayerDetail(idx));
-        }
+        section.appendChild(grid);
+        root.appendChild(section);
       });
     }
 
     function renderCards(items) {
-      const wrap = el("div", "cards");
+      const wrap = el("div", "company-scroll");
       items.forEach(item => {
-        const card = el("button", item === state.selected ? "company-card active" : "company-card");
+        const isActive = item === state.selected;
+        const card = el("button", isActive ? "company-card active" : "company-card");
         card.type = "button";
         card.style.setProperty("--theme", themeFor(item));
-        card.appendChild(el("h3", "", item.title));
-        const row = el("div", "tag-row");
-        item.tags.slice(0, 4).forEach(tag => row.appendChild(el("span", "tag", tag)));
-        card.appendChild(row);
-        const advantages = Object.entries(item.scores || {}).filter(([, value]) => String(value).includes("强"));
-        if (advantages.length) {
-          const advantageRow = el("div", "advantage-row");
-          advantages.forEach(([key, value]) => advantageRow.appendChild(el("span", "advantage-chip", `${key} ${value}`)));
-          card.appendChild(advantageRow);
+        const header = el("div", "company-card-header");
+        header.appendChild(renderCompanyLogo(item));
+        const main = el("div", "company-card-main");
+        main.appendChild(el("h3", "", item.title));
+        main.appendChild(el("p", "", item.summary));
+        header.appendChild(main);
+        card.appendChild(header);
+        if (isActive) {
+          const expanded = el("div", "company-card-expanded");
+          const metaRow = el("div", "company-meta-row");
+          metaRow.appendChild(el("span", "company-card-type", item.type || "公司样本"));
+          if (item.group) metaRow.appendChild(el("span", "subtag-card group", item.group));
+          if (item.commercialStage) metaRow.appendChild(el("span", "subtag-card stage", item.commercialStage));
+          expanded.appendChild(metaRow);
+          const tagRow = el("div", "tag-row");
+          item.tags.slice(0, 4).forEach(tag => tagRow.appendChild(el("span", "tag", tag)));
+          expanded.appendChild(tagRow);
+          const scoreRow = el("div", "company-score-row");
+          Object.entries(item.scores || {}).forEach(([key, value]) => scoreRow.appendChild(el("span", "advantage-chip", `${key} ${value}`)));
+          expanded.appendChild(scoreRow);
+          const windowRow = el("div", "company-window-row");
+          (companyWindows[item.title] || []).slice(0, 3).forEach(source => windowRow.appendChild(el("span", "tag", `${source.type} ${source.label}`)));
+          expanded.appendChild(windowRow);
+          expanded.appendChild(el("p", "", item.commercial ? `商业成果：${item.commercial}` : item.evidence || ""));
+          card.appendChild(expanded);
         }
-        card.appendChild(el("p", "", item.summary));
         card.addEventListener("click", () => {
           state.selected = item;
-          renderContent();
+          renderCompanyBand();
+          renderLayers();
+          renderLayerMatrix();
           renderDetail(item);
         });
         wrap.appendChild(card);
       });
       return wrap;
+    }
+
+    function compactHighlights(item) {
+      const strong = Object.entries(item.scores || {}).filter(([, value]) => String(value).includes("强")).slice(0, 2);
+      if (strong.length) return strong.map(([key, value]) => `${key} ${value}`);
+      return Object.entries(item.scores || {}).slice(0, 2).map(([key, value]) => `${key} ${value}`);
+    }
+
+    function renderSelectedCompanyBar() {
+      const bar = document.getElementById("selectedCompanyBar");
+      if (!bar) return;
+      bar.innerHTML = "";
+      if (!state.compactPinned || window.innerWidth <= 860 || state.view !== "companies") {
+        bar.classList.remove("active");
+        const detail = document.querySelector(".detail");
+        if (detail) detail.style.top = "16px";
+        return;
+      }
+      const logo = renderCompanyLogo(state.selected);
+      const main = el("div", "selected-company-main");
+      main.appendChild(el("strong", "", state.selected.title));
+      main.appendChild(el("span", "", state.selected.summary));
+      const chips = el("div", "selected-company-highlights");
+      compactHighlights(state.selected).forEach(text => chips.appendChild(el("span", "advantage-chip", text)));
+      bar.appendChild(logo);
+      bar.appendChild(main);
+      bar.appendChild(chips);
+      bar.classList.add("active");
+      const detail = document.querySelector(".detail");
+      if (detail) detail.style.top = `${bar.offsetHeight + 28}px`;
+    }
+
+    function updatePinnedCompanyBar() {
+      const band = document.querySelector(".company-band");
+      if (!band || window.innerWidth <= 860 || state.view !== "companies") {
+        state.compactPinned = false;
+        if (band) band.classList.remove("hidden-by-sticky");
+        renderSelectedCompanyBar();
+        return;
+      }
+      const rect = band.getBoundingClientRect();
+      const shouldPin = rect.bottom <= 0;
+      state.compactPinned = shouldPin;
+      band.classList.toggle("hidden-by-sticky", shouldPin);
+      renderSelectedCompanyBar();
+    }
+
+    function companyColumnsForWidth(width) {
+      if (width <= 860) return 1;
+      if (width <= 1180) return 2;
+      if (width <= 1520) return 3;
+      return 4;
+    }
+
+    function layoutCompanyMasonry() {
+      const root = document.querySelector("#companyBand .company-scroll");
+      if (!root) return;
+      const cards = Array.from(root.querySelectorAll(".company-card"));
+      if (!cards.length) return;
+      const width = root.clientWidth;
+      const cols = companyColumnsForWidth(window.innerWidth);
+      if (cols <= 1) {
+        root.classList.remove("masonry-active");
+        root.style.height = "";
+        cards.forEach(card => {
+          card.style.position = "";
+          card.style.left = "";
+          card.style.top = "";
+          card.style.width = "";
+        });
+        return;
+      }
+      root.classList.add("masonry-active");
+      const gap = 10;
+      const colWidth = (width - gap * (cols - 1)) / cols;
+      const heights = Array.from({ length: cols }, () => 0);
+      cards.forEach(card => {
+        card.style.width = `${colWidth}px`;
+        card.style.position = "absolute";
+      });
+      cards.forEach(card => {
+        const targetCol = heights.indexOf(Math.min(...heights));
+        const left = targetCol * (colWidth + gap);
+        const top = heights[targetCol];
+        card.style.left = `${left}px`;
+        card.style.top = `${top}px`;
+        const nextHeight = top + card.offsetHeight + gap;
+        heights[targetCol] = nextHeight;
+      });
+      root.style.height = `${Math.max(...heights) - gap}px`;
+    }
+
+    function scheduleCompanyMasonry() {
+      cancelAnimationFrame(masonryRaf);
+      masonryRaf = requestAnimationFrame(layoutCompanyMasonry);
+    }
+
+    function filteredCompanies() {
+      return companies.filter(item => {
+        const groupOk = state.selectedGroup === "全部公司" || item.group === state.selectedGroup;
+        const stageOk = state.selectedStage === "全部阶段" || item.commercialStage === state.selectedStage;
+        return groupOk && stageOk;
+      });
+    }
+
+    function ensureSelectedVisible(items) {
+      if (!items.length) return;
+      if (!items.includes(state.selected)) state.selected = items[0];
+    }
+
+    function renderFilterSet(root, label, values, activeValue, className, onPick) {
+      const row = el("div", "filter-set");
+      row.appendChild(el("span", "filter-label", label));
+      values.forEach(value => {
+        const chip = el("button", `filter-chip ${className}${value === activeValue ? " active" : ""}`);
+        chip.type = "button";
+        chip.textContent = value;
+        chip.addEventListener("click", () => onPick(value));
+        row.appendChild(chip);
+      });
+      root.appendChild(row);
+    }
+
+    function renderCompanyFilters() {
+      const root = document.getElementById("companyFilters");
+      if (!root) return;
+      root.innerHTML = "";
+      renderFilterSet(root, "一级分类", groupFilters, state.selectedGroup, "group", value => {
+        state.selectedGroup = value;
+        const items = filteredCompanies();
+        ensureSelectedVisible(items);
+        renderCompanyFilters();
+        renderCompanyBand();
+        renderLayers();
+        renderLayerMatrix();
+        renderDetail(state.selected);
+        updatePinnedCompanyBar();
+      });
+      renderFilterSet(root, "商业阶段", stageFilters, state.selectedStage, "stage", value => {
+        state.selectedStage = value;
+        const items = filteredCompanies();
+        ensureSelectedVisible(items);
+        renderCompanyFilters();
+        renderCompanyBand();
+        renderLayers();
+        renderLayerMatrix();
+        renderDetail(state.selected);
+        updatePinnedCompanyBar();
+      });
     }
 
     function renderProductRoadmaps() {
@@ -1912,7 +5170,22 @@
         grid.appendChild(card);
       });
       wrap.appendChild(grid);
-      wrap.appendChild(renderCards(routes));
+      const routeList = el("div", "layer-route-list");
+      routes.forEach(item => {
+        const card = el("section", "route-card");
+        card.style.borderLeftColor = themeFor(item);
+        card.appendChild(el("h3", "", item.title));
+        card.appendChild(el("p", "", item.summary));
+        const row = el("div", "tag-row");
+        item.tags.slice(0, 4).forEach(tag => row.appendChild(el("span", "tag", tag)));
+        card.appendChild(row);
+        const scoreRow = el("div", "advantage-row");
+        Object.entries(item.scores || {}).forEach(([key, value]) => scoreRow.appendChild(el("span", "advantage-chip", `${key} ${value}`)));
+        card.appendChild(scoreRow);
+        card.appendChild(el("p", "panel-note", item.evidence));
+        routeList.appendChild(card);
+      });
+      wrap.appendChild(routeList);
       return wrap;
     }
 
@@ -1971,13 +5244,88 @@
       return wrap;
     }
 
-    function renderContent() {
-      const root = document.getElementById("contentView");
+    function renderCompanyBand() {
+      const root = document.getElementById("companyBand");
+      if (!root) return;
       root.innerHTML = "";
-      if (state.view === "companies") root.appendChild(renderCards(companies));
-      if (state.view === "routes") root.appendChild(renderProductRoadmaps());
-      if (state.view === "ros") root.appendChild(renderRos());
-      if (state.view === "gov") root.appendChild(renderGov());
+      const items = filteredCompanies();
+      ensureSelectedVisible(items);
+      root.appendChild(renderCards(items));
+      scheduleCompanyMasonry();
+      updatePinnedCompanyBar();
+    }
+
+    function renderLayerMatrix() {
+      const root = document.getElementById("matrixView");
+      if (!root) return;
+      root.innerHTML = "";
+      const wrap = el("div", "matrix-density");
+      const head = el("div", "matrix-density-head");
+      head.appendChild(el("div", "", "公司 / 覆盖统计"));
+      layerBandDefs.forEach(band => head.appendChild(el("div", "", band.title)));
+      wrap.appendChild(head);
+      filteredCompanies().forEach(company => {
+        const allStates = Object.values(companyLayerMatrix[company.title] || {});
+        const core = allStates.filter(item => item.status === "core").length;
+        const extend = allStates.filter(item => item.status === "extend").length;
+        const gap = allStates.filter(item => item.status === "gap").length;
+        const row = el("div", `matrix-density-row${company === state.selected ? " is-selected" : ""}`);
+        row.style.setProperty("--theme", themeFor(company));
+        const companyCell = el("div", "matrix-company-cell");
+        companyCell.appendChild(renderCompanyLogo(company));
+        const meta = el("div", "matrix-company-meta");
+        meta.appendChild(el("strong", "", company.title));
+        meta.appendChild(el("span", "", `核心 ${core} / 延伸 ${extend} / 缺口 ${gap}`));
+        meta.appendChild(el("span", "", company.type || "公司样本"));
+        companyCell.appendChild(meta);
+        row.appendChild(companyCell);
+        layerBandDefs.forEach(band => {
+          const bandStates = band.layers.map(layerId => companyLayerMatrix[company.title]?.[layerId] || { status: "gap", summary: "未公开" });
+          const box = el("div", "matrix-band-cell");
+          const bandHead = el("div", "matrix-band-title");
+          bandHead.appendChild(el("span", "", band.title.split(" ")[0]));
+          const coreCount = bandStates.filter(item => item.status === "core").length;
+          const extendCount = bandStates.filter(item => item.status === "extend").length;
+          const gapCount = bandStates.filter(item => item.status === "gap").length;
+          bandHead.appendChild(el("span", "matrix-band-count", `${coreCount}/${extendCount}/${gapCount}`));
+          box.appendChild(bandHead);
+          const grid = el("div", "matrix-band-grid");
+          band.layers.forEach((layerId, index) => {
+            const data = bandStates[index];
+            const cell = el("div", `matrix-cell ${data.status}`);
+            cell.appendChild(el("span", "matrix-cell-status", `${layerId} · ${statusLabels[data.status] || data.status}`));
+            cell.appendChild(el("span", "", data.summary));
+            grid.appendChild(cell);
+          });
+          box.appendChild(grid);
+          row.appendChild(box);
+        });
+        wrap.appendChild(row);
+      });
+      root.appendChild(wrap);
+    }
+
+    function openMatrixModal() {
+      const modal = document.getElementById("matrixModal");
+      if (!modal) return;
+      renderLayerMatrix();
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("matrix-modal-open");
+      document.getElementById("closeMatrixModal")?.focus();
+    }
+
+    function closeMatrixModal() {
+      const modal = document.getElementById("matrixModal");
+      if (!modal) return;
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("matrix-modal-open");
+      document.getElementById("openMatrixModal")?.focus();
+    }
+
+    function renderContent() {
+      return;
     }
 
     function renderStack(item) {
@@ -1996,16 +5344,17 @@
       });
     }
 
-    function renderSources(item) {
-      const root = document.getElementById("detailSources");
+    function renderSourceList(rootId, items, emptyText) {
+      const root = document.getElementById(rootId);
       root.innerHTML = "";
-      const sources = evidenceSources[item.title] || [];
-      if (!sources.length) {
-        root.appendChild(el("p", "panel-note", "当前视图没有单独来源链接，按页面底部资料锚点和本地报告来源处理。"));
+      if (!items.length) {
+        root.appendChild(el("p", "panel-note", emptyText));
         return;
       }
-      sources.forEach(source => {
+      items.forEach(source => {
         const row = el("div", "evidence-item");
+        const type = el("span", "source-type", source.type || "来源");
+        row.appendChild(type);
         const link = el("a", "", source.label);
         link.href = source.href;
         link.target = "_blank";
@@ -2014,6 +5363,14 @@
         row.appendChild(el("span", "", source.note));
         root.appendChild(row);
       });
+    }
+
+    function renderSources(item) {
+      renderSourceList("detailSources", evidenceSources[item.title] || [], "当前视图没有单独来源链接，按页面底部资料锚点和本地报告来源处理。");
+    }
+
+    function renderWindows(item) {
+      renderSourceList("detailWindows", companyWindows[item.title] || [], "该公司对外窗口仍在补齐，当前以官网和资料附录为准。");
     }
 
     function renderDetail(item) {
@@ -2043,6 +5400,7 @@
       document.getElementById("detailGov").textContent = item.gov || "";
       document.getElementById("detailEvidence").textContent = item.evidence || "";
       document.getElementById("detailCommercial").textContent = item.commercial ? `商业成果：${item.commercial}` : "";
+      renderWindows(item);
       renderSources(item);
     }
 
@@ -2053,15 +5411,40 @@
         state.view = btn.dataset.view;
         if (state.view === "routes") state.selected = routes[0];
         if (state.view === "companies") state.selected = companies[0];
-        renderContent();
-        if (state.view === "routes" || state.view === "companies") renderDetail(state.selected);
+        if (state.view === "companies") {
+          state.selectedGroup = "全部公司";
+          state.selectedStage = "全部阶段";
+        }
+        renderCompanyFilters();
+        renderCompanyBand();
+        renderLayers();
+        renderLayerMatrix();
+        renderDetail(state.selected);
+        updatePinnedCompanyBar();
       });
     });
 
     renderRails();
+    renderCompanyFilters();
+    renderCompanyBand();
     renderLayers();
+    renderLayerMatrix();
     renderContent();
     renderDetail(state.selected);
+    window.addEventListener("resize", scheduleCompanyMasonry);
+    window.addEventListener("resize", updatePinnedCompanyBar);
+    window.addEventListener("scroll", updatePinnedCompanyBar, { passive: true });
+    document.getElementById("openMatrixModal")?.addEventListener("click", openMatrixModal);
+    document.getElementById("closeMatrixModal")?.addEventListener("click", closeMatrixModal);
+    document.getElementById("matrixModal")?.addEventListener("click", event => {
+      if (event.target === event.currentTarget) closeMatrixModal();
+    });
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape" && document.getElementById("matrixModal")?.classList.contains("open")) {
+        closeMatrixModal();
+      }
+    });
+    updatePinnedCompanyBar();
   </script>
 </body>
 </html>
