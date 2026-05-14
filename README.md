@@ -13,4 +13,4 @@ The private working repository remains the source for internal notes, drafts, an
 This repository is designed to publish through GitHub Pages.
 
 - Public site: `https://note.imlarry.cn/insight-hub/`
-- Report path: `/robot-os-map/`
+- Report URL: `https://note.imlarry.cn/insight-hub/robot-os-map/`
